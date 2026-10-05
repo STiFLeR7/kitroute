@@ -120,19 +120,23 @@ async function history(): Promise<string> {
 
 const CODEX_NOTE = 'Codex requires reviewing new hooks with /hooks before they run; Kitroute does not bypass this.';
 const CLAUDE_EVENTS: Array<[string, string?]> = [['UserPromptSubmit'], ['PostToolUse', 'Skill'], ['PostToolUseFailure', 'Skill'], ['SessionStart']];
-const CODEX_EVENTS: Array<[string, string?]> = [['UserPromptSubmit'], ['PostToolUse'], ['SessionStart']];
+// No Codex PostToolUse: nothing is recordable (no Codex tool inventory; skill loads are unobservable), so it would only spawn workers.
+const CODEX_EVENTS: Array<[string, string?]> = [['UserPromptSubmit'], ['SessionStart']];
+const WINDOWS_CODEX_NOTE = 'codex: setup skipped on Windows until a live run proves the hook shell (UNVERIFIED_WINDOWS_HOOK_SHELL)';
 const text = (f: string) => { try { return readFileSync(f, 'utf8'); } catch { return ''; } };
 
-async function setupCommand(args: string[]): Promise<string> {
+export async function setupCommand(args: string[], platform: string = process.platform): Promise<string> {
   if (args.some(a => a !== '--dry-run')) throw new Error('INVALID_ARGUMENTS');
   const dryRun = args.length === 1;
   const [{ detectStatus }, { buildCommand, planSetup }, apply] = await Promise.all([
     import('./setup/detect.js'), import('./setup/plan.js'), import('./setup/apply.js')]);
   const home = homedir();
   const hosts = await detectStatus(home);
+  // the quoted `"node.exe" "bin"` command form is proven only in Git Bash for Claude Code
+  if (platform === 'win32') for (const s of hosts) if (s.host === 'codex' && s.present) s.note = WINDOWS_CODEX_NOTE;
   const bin = fileURLToPath(new URL('../../bin/kitroute.mjs', import.meta.url));
   const entries: Patch[] = [], conflicts: string[] = [];
-  for (const h of hosts.filter(s => s.present && s.supported)) {
+  for (const h of hosts.filter(s => s.present && s.supported && !(platform === 'win32' && s.host === 'codex'))) {
     const file = join(home, h.host === 'codex' ? '.codex' : '.claude', h.host === 'codex' ? 'hooks.json' : 'settings.json');
     try {
       entries.push({
@@ -162,8 +166,10 @@ async function uninstallCommand(args: string[]): Promise<string> {
     apply.commit(changed.map(f => ({ file: f, before: before[f]!, beforeHash: sha256(before[f]!), after: result.files[f]! })));
     const { isDeepStrictEqual } = await import('node:util');
     const stillThere = (m: { file: string; event: string; entry: unknown }) => {
-      const hooks = (JSON.parse(text(m.file) || '{}') as { hooks?: Record<string, unknown[]> }).hooks ?? {};
-      return (hooks[m.event] ?? []).some(e => isDeepStrictEqual(e, m.entry));
+      try {
+        const hooks = (JSON.parse(text(m.file) || '{}') as { hooks?: Record<string, unknown[]> }).hooks ?? {};
+        return (hooks[m.event] ?? []).some(e => isDeepStrictEqual(e, m.entry));
+      } catch { return true; } // unreadable file: keep the ownership row
     };
     apply.writeManifest(manifest.filter(stillThere));
   }

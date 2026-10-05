@@ -10,6 +10,7 @@ import type { Patch } from '../../src/contracts.js';
 import { detectHosts, detectStatus } from '../../src/setup/detect.js';
 import { buildCommand, planSetup, uninstall } from '../../src/setup/plan.js';
 import { applySetup, readManifest, toPatches } from '../../src/setup/apply.js';
+import { setupCommand } from '../../src/cli.js';
 
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const tmp = mkdtempSync(join(tmpdir(), 'kit-setup-'));
@@ -194,8 +195,8 @@ test('CLI: no host means no changes; dry-run is immutable; setup and uninstall r
   assert.equal(claude.theme, 'dark');
   assert.deepEqual(Object.keys(claude.hooks).sort(), ['PostToolUse', 'PostToolUseFailure', 'SessionStart', 'UserPromptSubmit']);
   assert.equal(claude.hooks.PostToolUse[0].matcher, 'Skill');
-  const codex = JSON.parse(readFileSync(join(home, '.codex', 'hooks.json'), 'utf8'));
-  assert.deepEqual(Object.keys(codex.hooks).sort(), ['PostToolUse', 'SessionStart', 'UserPromptSubmit']);
+  if (process.platform === 'win32') assert.equal(existsSync(join(home, '.codex', 'hooks.json')), false); // Codex skipped on Windows
+  else assert.deepEqual(Object.keys(JSON.parse(readFileSync(join(home, '.codex', 'hooks.json'), 'utf8')).hooks).sort(), ['SessionStart', 'UserPromptSubmit']);
   assert.equal(cli(home, 'setup').out.plan.patches.length, 0);
 
   claude.theme = 'light';
@@ -239,4 +240,78 @@ test('repeated setup with a changed command replaces the stale owned entry', () 
   const edited = planSetup({ [f]: readFileSync(f, 'utf8') }, [owned(f, 'node C.mjs hook')], toPatches(m));
   assert.match(edited.conflicts[0]!, /ENTRY_MODIFIED/);
   assert.equal(edited.patches[0]!.remove, undefined);
+});
+
+test('planSetup: an edited Kitroute entry is a conflict, not a second copy', () => {
+  const p = owned('h.json');
+  const edited = { hooks: { UserPromptSubmit: [{ hooks: [{ type: 'command', command: 'node k.mjs hook --event UserPromptSubmit', timeout: 30 }] }] } };
+  const plan = planSetup({ 'h.json': JSON.stringify(edited) }, [p]);
+  assert.deepEqual(plan.patches, []);
+  assert.match(plan.conflicts[0]!, /ENTRY_MODIFIED UserPromptSubmit/);
+});
+
+test('uninstall reports an edited Kitroute entry even when an exact copy was removed', () => {
+  const p = owned('h.json');
+  const editedEntry = { hooks: [{ type: 'command', command: 'node k.mjs hook --event UserPromptSubmit', timeout: 30 }] };
+  const doc = { hooks: { UserPromptSubmit: [editedEntry, p.add[0]!.entry] } };
+  const r = uninstall({ 'h.json': JSON.stringify(doc) }, [p]);
+  assert.deepEqual(JSON.parse(r.files['h.json']!).hooks.UserPromptSubmit, [editedEntry]);
+  assert.match(r.conflicts[0]!, /ENTRY_MODIFIED UserPromptSubmit/);
+});
+
+async function withHome(fn: (home: string) => Promise<void>) {
+  const root = dir(), home = join(root, 'home');
+  mkdirSync(join(home, '.claude'), { recursive: true }); mkdirSync(join(home, '.codex'));
+  const keys = ['HOME', 'USERPROFILE', 'KITROUTE_HOME'] as const, saved = keys.map(k => process.env[k]);
+  process.env['HOME'] = process.env['USERPROFILE'] = home; process.env['KITROUTE_HOME'] = join(root, 'kdata');
+  try { await fn(home); } finally { keys.forEach((k, i) => { if (saved[i] === undefined) delete process.env[k]; else process.env[k] = saved[i]; }); }
+}
+
+test('setup registers Codex UserPromptSubmit and SessionStart only (no PostToolUse)', async () => {
+  await withHome(async home => {
+    await setupCommand([], 'linux');
+    const c = JSON.parse(readFileSync(join(home, '.codex', 'hooks.json'), 'utf8'));
+    assert.deepEqual(Object.keys(c.hooks).sort(), ['SessionStart', 'UserPromptSubmit']);
+    assert.ok(existsSync(join(home, '.claude', 'settings.json')));
+  });
+});
+
+test('setup on win32 skips Codex with a host note and still enables Claude Code', async () => {
+  await withHome(async home => {
+    const out = JSON.parse(await setupCommand([], 'win32'));
+    assert.equal(existsSync(join(home, '.codex', 'hooks.json')), false);
+    assert.ok(existsSync(join(home, '.claude', 'settings.json')));
+    const note = out.hosts.find((h: { host: string }) => h.host === 'codex').note;
+    assert.match(note, /UNVERIFIED_WINDOWS_HOOK_SHELL/);
+    assert.ok(out.plan.patches.every((p: { file: string }) => !p.file.includes('.codex')));
+  });
+});
+
+test('uninstall survives a malformed managed file after committing another', () => {
+  const root = dir(), home = join(root, 'home'), kdata = join(root, 'kdata');
+  mkdirSync(home); mkdirSync(kdata);
+  const a = join(home, 'a.json'), b = join(home, 'b.json');
+  const entry = { hooks: [{ type: 'command', command: 'node k.mjs hook' }] };
+  writeFileSync(a, JSON.stringify({ hooks: { UserPromptSubmit: [entry] } }));
+  writeFileSync(b, '{nope');
+  const row = (file: string) => ({ file, event: 'UserPromptSubmit', entry, ownedId: 'x' });
+  writeFileSync(join(kdata, 'setup-manifest.json'), JSON.stringify({ version: 1, entries: [row(a), row(b)] }));
+  const r = cli(home, 'uninstall');
+  assert.equal(r.code, 0, r.err);
+  assert.deepEqual(JSON.parse(readFileSync(a, 'utf8')).hooks, {});
+  const left = JSON.parse(readFileSync(join(kdata, 'setup-manifest.json'), 'utf8')).entries;
+  assert.deepEqual(left.map((x: { file: string }) => x.file), [b]);
+});
+
+test('applySetup records intent before committing and restores the manifest when commit fails', () => {
+  const d = dir(), f1 = join(d, 'one.json'), f2 = join(d, 'two.json');
+  const mpath = join(data, 'setup-manifest.json');
+  applySetup(planSetup({ [f1]: '' }, [owned(f1)]), d);
+  const before = readFileSync(mpath, 'utf8');
+  let intent = false;
+  const rename = () => { intent = readManifest().some(x => x.file === f2); throw new Error('boom'); };
+  assert.throws(() => applySetup(planSetup({ [f2]: '' }, [owned(f2)]), d, { rename }), /boom/);
+  assert.ok(intent, 'manifest listed the entry before the file commit');
+  assert.equal(readFileSync(mpath, 'utf8'), before);
+  assert.equal(existsSync(f2), false);
 });

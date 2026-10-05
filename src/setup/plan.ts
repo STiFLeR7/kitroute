@@ -59,12 +59,19 @@ export function planSetup(files: Record<string, string>, entries: Patch[], manif
     const p = parse(text);
     if (typeof p === 'string') { conflicts.push(`${e.file}: ${p}`); continue; }
     const present = (ev: string) => (p.hooks[ev] as unknown[] | undefined) ?? [];
-    const add = e.add.filter(a => !present(a.event).some(x => isDeepStrictEqual(x, a.entry)));
     const remove: Patch['add'] = [];
     for (const m of manifest.filter(m => m.file === e.file).flatMap(m => m.add)) {
       if (e.add.some(a => isDeepStrictEqual(a.entry, m.entry)) || !e.add.some(a => a.event === m.event)) continue;
       if (present(m.event).some(x => isDeepStrictEqual(x, m.entry))) remove.push(m);
       else if (present(m.event).some(x => commandsOf(x).some(c => commandsOf(m.entry).includes(c)))) conflicts.push(`${e.file}: ENTRY_MODIFIED ${m.event} ${m.ownedId}`);
+    }
+    const sharesCommand = (a: Patch['add'][number]) =>
+      present(a.event).some(x => !remove.some(r => r.event === a.event && isDeepStrictEqual(r.entry, x)) && commandsOf(x).some(c => commandsOf(a.entry).includes(c)));
+    const add: Patch['add'] = [];
+    for (const a of e.add) {
+      if (present(a.event).some(x => isDeepStrictEqual(x, a.entry))) continue;
+      // same Kitroute command but not identical: the user edited it; never add a second copy
+      if (sharesCommand(a)) conflicts.push(`${e.file}: ENTRY_MODIFIED ${a.event} ${a.ownedId}`); else add.push(a);
     }
     if (add.length || remove.length) patches.push({ file: e.file, beforeHash: sha256(text), add, ...(remove.length ? { remove } : {}) });
   }
@@ -92,10 +99,9 @@ export function uninstall(files: Record<string, string>, ownedPatches: Patch[]):
       if (kept.length !== arr.length) {
         changed.add(patch.file);
         if (kept.length) hooks[a.event] = kept; else delete hooks[a.event];
-        continue;
       }
       const mine = commandsOf(a.entry);
-      if (arr.some(e => commandsOf(e).some(c => mine.includes(c)))) conflicts.push(`${patch.file}: ENTRY_MODIFIED ${a.event} ${a.ownedId}`);
+      if (kept.some(e => commandsOf(e).some(c => mine.includes(c)))) conflicts.push(`${patch.file}: ENTRY_MODIFIED ${a.event} ${a.ownedId}`);
     }
   }
   for (const f of changed) out[f] = dump(parsed.get(f));

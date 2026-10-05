@@ -63,17 +63,28 @@ export function applySetup(plan: { patches: PlanPatch[] } & Partial<SetupPlan>, 
     if (sha256(before) !== p.beforeHash) throw new Error(`HASH_CHANGED ${file}`);
     return { file, before, beforeHash: p.beforeHash, after: addEntries(before, p.add, p.remove) };
   });
-  commit(changes, opts);
   // identity is (file, event, deep-equal entry); ownedId may repeat across rows
   const same = (x: ManifestEntry, file: string, a: Patch['add'][number]) =>
     x.file === file && x.event === a.event && isDeepStrictEqual(x.entry, a.entry);
-  let m = readManifest();
+  const prior = readManifest();
+  let intent = prior, final = prior;
   for (const p of plan.patches) {
     const file = abs(p.file);
-    m = m.filter(x => !(p.remove ?? []).some(r => same(x, file, r)));
-    for (const a of p.add) if (!m.some(x => same(x, file, a))) m.push({ file, ...a });
+    final = final.filter(x => !(p.remove ?? []).some(r => same(x, file, r)));
+    for (const a of p.add) {
+      if (!intent.some(x => same(x, file, a))) intent = [...intent, { file, ...a }];
+      if (!final.some(x => same(x, file, a))) final = [...final, { file, ...a }];
+    }
   }
-  writeManifest(m);
+  // Record intent (including entries about to be added) before touching host files, so a crash never leaves
+  // an owned entry without a manifest row. If the commit fails, put the previous manifest back.
+  const old = existsSync(manifestPath()) ? readFileSync(manifestPath(), 'utf8') : null;
+  writeManifest(intent);
+  try { commit(changes, opts); } catch (e) {
+    if (old === null) rmSync(manifestPath(), { force: true }); else writeFileSync(manifestPath(), old);
+    throw e;
+  }
+  writeManifest(final); // now drop rows for replaced entries
 }
 
 export const toPatches = (entries: ManifestEntry[]): Patch[] => {
