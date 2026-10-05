@@ -51,7 +51,8 @@ export function normalizePost(host: Host, raw: unknown, event: string, failureEv
 
 /** Match a post-tool event to a capability of the active host and project. Codex skill loads stay unknown. */
 export function observePost(input: AdapterInput, items: Capability[]): Observation | null {
-  const scope = items.filter(c => c.host === input.host && (input.projectId === undefined || c.projectId === input.projectId));
+  if (input.projectId === undefined) return null;
+  const scope = items.filter(c => c.host === input.host && c.projectId === input.projectId);
   const succeeded = input.succeeded ?? null;
   if (input.host === 'claude-code' && input.skillTarget !== undefined) {
     const s = scope.find(c => c.kind === 'skill' && c.name === input.skillTarget);

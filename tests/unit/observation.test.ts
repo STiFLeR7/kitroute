@@ -138,3 +138,42 @@ test('end to end: PostToolUse is silent, records one row; history and tables are
     rmSync(tmp, { recursive: true, force: true });
   }
 });
+
+test('observe without projectId is null (no cross-project leak)', () => {
+  const { projectId: _p, ...noProj } = inp({ toolName: 'Skill', skillTarget: 'debug', succeeded: true });
+  assert.equal(claudeCode.observe(noProj, [skill, otherProj]), null);
+  assert.equal(claudeCode.observe({ ...noProj, skillTarget: undefined, toolName: 'mcp__synthetic__search' } as AdapterInput, [mcp]), null);
+});
+
+test('failed usage insert rolls back the dedupe row so a retry succeeds', () => {
+  const store = openStore(':memory:');
+  const obs = { capabilityId: 'm', kind: 'tool-call' as const, succeeded: true };
+  const i = inp({ eventId: 'e9' });
+  assert.throws(() => recordObservation(store, i, obs, '', 1000), { message: 'STORE_WRITE_FAILED' });
+  assert.equal(store.db.prepare('SELECT COUNT(*) AS n FROM observed_events').get()!.n, 0);
+  assert.equal(recordObservation(store, i, obs, 'search', 1001), true);
+  store.close();
+});
+
+test('worker start prunes usage older than 30 days', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'kit-prune-'));
+  const home = join(tmp, 'home'), proj = join(tmp, 'proj'), data = join(tmp, 'data');
+  mkdirSync(home, { recursive: true }); mkdirSync(proj, { recursive: true }); mkdirSync(data, { recursive: true });
+  const saved = { ...process.env };
+  Object.assign(process.env, { KITROUTE_HOME: data, HOME: home, USERPROFILE: home });
+  try {
+    const s = openStore(join(data, 'kitroute.db'));
+    s.db.prepare("INSERT INTO usage VALUES ('codex','p','s','c','n','selection','unknown',1,?)").run(Date.now() - 31 * DAY);
+    s.close();
+    await handleHook('claude-code', 'PostToolUse', JSON.stringify({
+      session_id: 's', cwd: proj, tool_name: 'Bash', tool_use_id: 't' }), undefined, 20000);
+    const db = new DatabaseSync(join(data, 'kitroute.db'));
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM usage').get()!.n, 0);
+    db.close();
+  } finally {
+    for (const k of ['KITROUTE_HOME', 'HOME', 'USERPROFILE']) {
+      if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k];
+    }
+    rmSync(tmp, { recursive: true, force: true });
+  }
+});

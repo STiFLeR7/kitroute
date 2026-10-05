@@ -18,6 +18,7 @@ async function main(): Promise<void> {
   let store;
   try {
     store = await openDefaultStore();
+    try { pruneUsage(store, Date.now()); } catch { /* history must not affect routing */ }
     const { currentAvailability, ensureInventory, sourceRevision } = await import('../discovery/refresh.js');
     const cached = await ensureInventory(store, s.adapter, s.context, await sourceRevision(s.roots, s.configFiles));
     const adapter = s.adapter;
