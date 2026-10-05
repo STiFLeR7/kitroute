@@ -9,7 +9,7 @@
 Temp project (mkdtemp) with `.claude/skills/kt-checkout-debug/SKILL.md` (description "Debug synthetic checkout failures"); temp settings JSON with a UserPromptSubmit command hook `node "<repo>/bin/kitroute.mjs" hook --host claude-code --event UserPromptSubmit`. Runs: `claude -p --settings <tmp>/s.json "<prompt>" < /dev/null`, cwd = temp project.
 
 ## Outcomes (3 runs)
-1. "Which skill guidance, if any, is in your context? Reply with only its capability name or NONE." replied `ponytail, superpowers:using-superpowers` (those come from the user's installed plugins, not Kitroute). The prompt shares no terms with the synthetic skill, so Kitroute abstaining is the expected result; no kt-checkout-debug.
+1. "Which skill guidance, if any, is in your context? Reply with only its capability name or NONE." replied with the user's installed plugin skill names (redacted), not Kitroute guidance. The prompt shares no terms with the synthetic skill, so Kitroute abstaining is the expected result; no kt-checkout-debug.
 2. "say hello" replied a greeting; no Kitroute guidance appeared. Not a clean NONE reply (the model did not follow the reply format), so the abstain is inferred from absence only.
 3. "Debug the synthetic checkout failure. <same question>" replied `kt-checkout-debug`. PASS: guidance reached the model through the compiled worker. kitroute.db was created in the temp KITROUTE_HOME.
 
