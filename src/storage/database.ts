@@ -15,7 +15,19 @@ CREATE TABLE inventory_revisions (
   project_id TEXT NOT NULL,
   revision TEXT NOT NULL,
   PRIMARY KEY (host, project_id)
-);`];
+);`, `
+CREATE TABLE usage (
+  host TEXT NOT NULL,
+  project_id TEXT NOT NULL,
+  session_id TEXT NOT NULL,
+  capability_id TEXT NOT NULL,
+  capability_name TEXT NOT NULL,
+  event TEXT NOT NULL,
+  result TEXT NOT NULL,
+  elapsed_ms REAL NOT NULL,
+  at_ms INTEGER NOT NULL
+);
+CREATE INDEX usage_at ON usage(at_ms);`];
 
 /** Map any SQLite failure to a fixed code; never echo paths or SQL. */
 export function storeError(e: unknown, fallback: string): Error {
