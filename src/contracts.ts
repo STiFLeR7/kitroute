@@ -53,6 +53,7 @@ export interface AdapterInput {
   nativeLoadTarget?: string;
   observedToolAvailable?: string;
   succeeded?: boolean;
+  sessionSource?: 'startup' | 'resume' | 'clear' | 'compact';
 }
 
 export interface DiscoveryContext {

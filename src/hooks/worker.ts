@@ -7,6 +7,7 @@ import { appendUsage, pruneUsage, recordObservation } from '../history/records.j
 import { advanceState, continuationText, phaseFromInput } from '../lifecycle/state.js';
 import type { Phase, SessionState, Store } from '../contracts.js';
 import { select } from '../routing/select.js';
+import { emitThenCommit, readAll, writeStdout } from './emit.js';
 
 const PHASES: Phase[] = ['general', 'reproduce', 'implement', 'verify'];
 
@@ -30,60 +31,66 @@ function saveState(store: Store, host: Host, sessionId: string, projectId: strin
 async function main(): Promise<void> {
   const host = process.argv[2] as Host, event = process.argv[3] ?? '';
   if (host !== 'claude-code' && host !== 'codex') throw new Error('INVALID_HOST');
-  let raw = '';
-  for await (const c of process.stdin) raw += c;
+  const raw = await readAll(process.stdin);
   const input = (host === 'codex' ? codex : claudeCode).normalize(JSON.parse(raw), event);
   if (!input) return;
   const s = await setup(host, input.cwd);
   const projectId = projectScopeId(normalizeProject(input.cwd), 'default');
-  let store;
+  let store: Store | undefined;
   try {
-    store = await openDefaultStore();
-    try { pruneUsage(store, Date.now()); } catch { /* history must not affect routing */ }
+    const st: Store = store = await openDefaultStore();
+    try { pruneUsage(st, Date.now()); } catch { /* history must not affect routing */ }
     const { currentAvailability, ensureInventory, sourceRevision } = await import('../discovery/refresh.js');
     const revision = await sourceRevision(s.roots, s.configFiles);
-    const cached = await ensureInventory(store, s.adapter, s.context, revision);
+    const cached = await ensureInventory(st, s.adapter, s.context, revision);
     const adapter = s.adapter;
     const scoped = { ...input, projectId, inventoryRevision: revision };
     if (event === 'SessionStart') {
-      // Old context may be gone after resume/compaction. Reroute only from a saved task phase; else stay silent.
+      // Only resume/compact may have lost context. clear/startup (and unknown sources) drop state and stay silent.
+      // Otherwise reroute only from a saved task phase.
       let saved: { project_id: string; phase: string } | undefined;
+      const reroute = input.sessionSource === 'resume' || input.sessionSource === 'compact';
       try {
-        saved = store.db.prepare('SELECT project_id, phase FROM session_state WHERE host = ? AND session_id = ?')
+        if (reroute) saved = st.db.prepare('SELECT project_id, phase FROM session_state WHERE host = ? AND session_id = ?')
           .get(host, input.sessionId) as typeof saved;
-        store.db.prepare('DELETE FROM session_state WHERE host = ? AND session_id = ?').run(host, input.sessionId);
-      } catch { /* ignore */ }
-      const phase = saved?.project_id === projectId ? PHASES.find(p => p === saved!.phase) : undefined;
-      if (!phase || phase === 'general') return;
+        const phase = saved?.project_id === projectId ? PHASES.find(p => p === saved!.phase) : undefined;
+        if (!phase || phase === 'general') {
+          st.db.prepare('DELETE FROM session_state WHERE host = ? AND session_id = ?').run(host, input.sessionId);
+          return;
+        }
+      } catch { return; }
+      const phase = PHASES.find(p => p === saved!.phase)!;
       const result = select({ host, projectId, sessionId: input.sessionId, text: continuationText(phase), phase },
         currentAvailability(cached, undefined), POLICY);
-      saveState(store, host, input.sessionId, projectId, revision, advanceState({ phase, signature: '' }, scoped, result.ids));
-      process.stdout.write(adapter.render(result, event));
+      await emitThenCommit(adapter.render(result, event), writeStdout,
+        () => saveState(st, host, input.sessionId, projectId, revision, advanceState({ phase, signature: '' }, scoped, result.ids)));
       return;
     }
     if (event !== 'UserPromptSubmit') {
       const obs = adapter.observe({ ...input, projectId }, cached);
       const item = obs && cached.find(c => c.id === obs.capabilityId);
-      try { if (obs && item) recordObservation(store, { ...input, projectId }, obs, item.name, Date.now()); } catch { /* ignore */ }
+      try { if (obs && item) recordObservation(st, { ...input, projectId }, obs, item.name, Date.now()); } catch { /* ignore */ }
       return;
     }
-    const previous = loadState(store, host, input.sessionId, projectId, revision);
+    const previous = loadState(st, host, input.sessionId, projectId, revision);
     const result = select({
       host, projectId, sessionId: input.sessionId, text: input.text ?? '', phase: phaseFromInput(input) ?? previous.phase,
       ...(input.turnId !== undefined ? { turnId: input.turnId } : {})
     }, currentAvailability(cached, undefined), POLICY);
     const next = advanceState(previous, scoped, result.ids);
-    saveState(store, host, input.sessionId, projectId, revision, next);
-    if (result.status === 'selected' && next.signature === previous.signature) return; // unchanged: no repeat guidance
-    for (const id of result.ids) {
-      const item = cached.find(c => c.id === id);
-      if (!item) continue;
-      try {
-        appendUsage(store, { host, projectId, sessionId: input.sessionId, capabilityId: id, capabilityName: item.name,
-          event: 'selection', result: 'unknown', elapsedMs: result.elapsedMs, atMs: Date.now() });
-      } catch { /* ignore */ }
-    }
-    process.stdout.write(s.adapter.render(result, event));
+    const silent = result.status === 'selected' && next.signature === previous.signature; // unchanged: no repeat guidance
+    await emitThenCommit(silent ? '' : s.adapter.render(result, event), writeStdout, () => {
+      saveState(st, host, input.sessionId, projectId, revision, next);
+      if (silent) return;
+      for (const id of result.ids) {
+        const item = cached.find(c => c.id === id);
+        if (!item) continue;
+        try {
+          appendUsage(st, { host, projectId, sessionId: input.sessionId, capabilityId: id, capabilityName: item.name,
+            event: 'selection', result: 'unknown', elapsedMs: result.elapsedMs, atMs: Date.now() });
+        } catch { /* ignore */ }
+      }
+    });
   } finally {
     store?.close();
   }

@@ -2,6 +2,7 @@ import type { AdapterInput, Capability, Host, Observation, RouteResult } from '.
 
 const EVENT = 'UserPromptSubmit';
 const START = 'SessionStart';
+const SOURCES = ['startup', 'resume', 'clear', 'compact'] as const;
 const obj = (v: unknown): Record<string, unknown> | null =>
   v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
 
@@ -16,12 +17,13 @@ export function normalizePrompt(host: Host, raw: unknown, event: string, turnKey
   return input;
 }
 
-/** SessionStart: documented for both hosts (source: startup/resume/clear/compact); only ids are copied, never source. */
+/** SessionStart: documented for both hosts (source: startup/resume/clear/compact); ids are copied; `source` only as an allowlisted value (unknown becomes startup). */
 export function normalizeStart(host: Host, raw: unknown, event: string): AdapterInput | null {
   if (event !== START) return null;
   const v = obj(raw);
   if (!v || typeof v.session_id !== 'string' || typeof v.cwd !== 'string') return null;
-  return { host, event, cwd: v.cwd, sessionId: v.session_id };
+  const sessionSource = SOURCES.find(x => x === v.source) ?? 'startup';
+  return { host, event, cwd: v.cwd, sessionId: v.session_id, sessionSource };
 }
 
 export function renderPrompt(result: RouteResult, event: string): string {

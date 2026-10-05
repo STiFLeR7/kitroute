@@ -146,7 +146,7 @@ test('retention prunes session_state older than 30 days', () => {
 test('SessionStart adapter shape', () => {
   for (const [adapter, host] of [[claudeCode, 'claude-code'], [codex, 'codex']] as const) {
     const i = adapter.normalize({ session_id: 's', cwd: '/c', source: 'compact', extra: 'x' }, 'SessionStart')!;
-    assert.deepEqual(i, { host, event: 'SessionStart', cwd: '/c', sessionId: 's' });
+    assert.deepEqual(i, { host, event: 'SessionStart', cwd: '/c', sessionId: 's', sessionSource: 'compact' });
     assert.equal(adapter.normalize({ cwd: '/c' }, 'SessionStart'), null);
     const res = { status: 'selected' as const, ids: ['a'], reasonCodes: [], guidance: 'G', elapsedMs: 0 };
     const out = adapter.render(res, 'SessionStart');
@@ -156,4 +156,53 @@ test('SessionStart adapter shape', () => {
     assert.equal(adapter.validateOutput(bad, 'SessionStart'), null);
     assert.equal(adapter.validateOutput(out.replace('SessionStart', 'UserPromptSubmit'), 'SessionStart'), null);
   }
+});
+
+test('readAll decodes multibyte characters split across chunks', async () => {
+  const { PassThrough } = await import('node:stream');
+  const { readAll } = await import('../../src/hooks/emit.js');
+  const text = `a${'é€'.repeat(40000)}`;
+  const buf = Buffer.from(text);
+  const s = new PassThrough();
+  const done = readAll(s);
+  for (let i = 0; i < buf.length; i += 65536) { s.write(buf.subarray(i, i + 65536)); await new Promise(r => setImmediate(r)); } // 65536 splits a multibyte char
+  s.end();
+  assert.equal(await done, text);
+});
+
+test('emitThenCommit writes stdout before committing state; a failed write commits nothing', async () => {
+  const { emitThenCommit } = await import('../../src/hooks/emit.js');
+  const log: string[] = [];
+  await emitThenCommit('X', async () => { await new Promise(r => setTimeout(r, 5)); log.push('write'); }, () => log.push('commit'));
+  assert.deepEqual(log, ['write', 'commit']);
+  const bad: string[] = [];
+  await emitThenCommit('X', async () => { throw new Error('EPIPE'); }, () => bad.push('commit'));
+  assert.deepEqual(bad, []);
+  const none: string[] = [];
+  await emitThenCommit('', async () => { none.push('write'); }, () => none.push('commit'));
+  assert.deepEqual(none, ['commit']);
+});
+
+test('SessionStart sessionSource is allowlisted; unknown values become startup', () => {
+  for (const [adapter, host] of [[claudeCode, 'claude-code'], [codex, 'codex']] as const) {
+    for (const [src, want] of [['startup', 'startup'], ['resume', 'resume'], ['clear', 'clear'], ['compact', 'compact'],
+      ['weird', 'startup'], [7, 'startup'], [undefined, 'startup']] as const) {
+      const i = adapter.normalize({ session_id: 's', cwd: '/c', source: src }, 'SessionStart')!;
+      assert.deepEqual(i, { host, event: 'SessionStart', cwd: '/c', sessionId: 's', sessionSource: want });
+    }
+  }
+});
+
+test('SessionStart clear and startup drop saved state and stay silent; resume reroutes', async () => {
+  await withEnv(async (tmp) => {
+    const a = mkProject(tmp, 'projA');
+    const q = 'debug the checkout failure';
+    assert.match(await run(EV, prompt(a.proj, q)), /kt-checkout-debug/);
+    for (const source of ['clear', 'startup', 'weird']) {
+      assert.equal(await run('SessionStart', start(a.proj, source)), '');
+      // state is gone, so the identical prompt is guided again instead of deduped
+      assert.match(await run(EV, prompt(a.proj, q)), /kt-checkout-debug/);
+    }
+    assert.match(JSON.parse(await run('SessionStart', start(a.proj, 'resume'))).hookSpecificOutput.additionalContext, /kt-checkout-debug/);
+  });
 });
