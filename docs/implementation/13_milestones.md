@@ -6,7 +6,7 @@ Status: planned. A milestone is complete only when its evidence is recorded and 
 
 | ID | Milestone | Depends on | Exit evidence | State |
 | --- | --- | --- | --- | --- |
-| M1 | Integration feasibility | Planning review | Runtime/build tests; synthetic hook round trips; live host entry/discovery report on Windows and Fedora. | Not started |
+| M1 | Integration feasibility | Planning review | Runtime/build tests; synthetic hook round trips; live host entry/discovery report on Windows and Fedora. | In progress, blocked: Codex live entry (hook trust review) and all Fedora runs; see [evidence 29](evidence/29_p01_host_feasibility.md). |
 | M2 | Local routing | M1 | Database migration/reopen/concurrency tests; eligibility, abstention, scope, ranking, and three-capability tests. | Not started |
 | M3 | Automatic host routing | M2 | Ordinary requests invoke routing; supported hook output; observed-use classification; 30-day privacy and retention tests. | Not started |
 | M4 | Installable preview | M3 | Task-change tests; setup preview/apply/repeat/uninstall tests; manual host smoke tests on both systems. | Not started |
