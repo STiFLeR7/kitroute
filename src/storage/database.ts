@@ -27,7 +27,8 @@ CREATE TABLE usage (
   elapsed_ms REAL NOT NULL,
   at_ms INTEGER NOT NULL
 );
-CREATE INDEX usage_at ON usage(at_ms);`];
+CREATE INDEX usage_at ON usage(at_ms);`, `
+CREATE TABLE observed_events (host TEXT NOT NULL, session_id TEXT NOT NULL, event_id TEXT NOT NULL, at_ms INTEGER NOT NULL, PRIMARY KEY (host, session_id, event_id));`];
 
 /** Map any SQLite failure to a fixed code; never echo paths or SQL. */
 export function storeError(e: unknown, fallback: string): Error {

@@ -1,15 +1,15 @@
 import type { Adapter, Capability } from '../contracts.js';
 import { discoverSkills } from '../discovery/skills.js';
-import { normalizePrompt, renderPrompt, validatePromptOutput } from './shared.js';
+import { normalizePost, normalizePrompt, observePost, renderPrompt, validatePromptOutput } from './shared.js';
 
 export const codex: Adapter = {
   host: 'codex',
-  normalize: (raw, event) => normalizePrompt('codex', raw, event),
+  normalize: (raw, event) => normalizePrompt('codex', raw, event) ?? normalizePost('codex', raw, event),
   discover: (context) => discoverSkills(context),
   render: renderPrompt,
   validateOutput: validatePromptOutput,
-  // Native observation is P03; unknown is the truthful default until a loading signal is proven.
-  observe: () => null,
+  // Tool calls only: Codex has no proven skill-load signal, so skill loads stay unknown.
+  observe: observePost,
 };
 
 const norm = (p: string) => p.replace(/\\/g, '/');

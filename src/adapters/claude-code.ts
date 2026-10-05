@@ -1,13 +1,14 @@
 import type { Adapter } from '../contracts.js';
 import { discoverSkills } from '../discovery/skills.js';
-import { normalizePrompt, renderPrompt, validatePromptOutput } from './shared.js';
+import { normalizePost, normalizePrompt, observePost, renderPrompt, validatePromptOutput } from './shared.js';
 
 export const claudeCode: Adapter = {
   host: 'claude-code',
-  normalize: (raw, event) => normalizePrompt('claude-code', raw, event, 'prompt_id'),
+  normalize: (raw, event) => normalizePrompt('claude-code', raw, event, 'prompt_id')
+    ?? normalizePost('claude-code', raw, event, 'PostToolUseFailure'),
   discover: (context) => discoverSkills(context),
   render: renderPrompt,
   validateOutput: validatePromptOutput,
-  // Native observation is P03; unknown is the truthful default until a loading signal is proven.
-  observe: () => null,
+  // Proven in P01.T3: PostToolUse/PostToolUseFailure with tool_name "Skill" and tool_input.skill.
+  observe: observePost,
 };

@@ -83,6 +83,7 @@ export interface AdapterInput {
   inventoryRevision?: string;
   sessionId: string;
   turnId?: string;
+  eventId?: string;
   text?: string;
   toolName?: string;
   skillTarget?: string;

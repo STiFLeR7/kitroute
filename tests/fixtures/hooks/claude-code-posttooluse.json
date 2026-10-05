@@ -1,0 +1,12 @@
+{
+  "session_id": "synthetic-session-1",
+  "transcript_path": "C:/synthetic/transcript.jsonl",
+  "cwd": "C:/synthetic/project",
+  "prompt_id": "synthetic-prompt-1",
+  "permission_mode": "default",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Skill",
+  "tool_input": { "skill": "debug" },
+  "tool_response": { "output": "UNIQUE_RESPONSE_MARKER" },
+  "tool_use_id": "toolu_synthetic_1"
+}

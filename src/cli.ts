@@ -105,6 +105,17 @@ async function index(args: string[]): Promise<string> {
   }
 }
 
+async function history(): Promise<string> {
+  const store = await openDefaultStore();
+  try {
+    const { listUsage, pruneUsage } = await import('./history/records.js');
+    pruneUsage(store, Date.now());
+    return JSON.stringify({ command: 'history', records: listUsage(store) });
+  } finally {
+    store.close();
+  }
+}
+
 export async function runCli(argv: string[], input: string): Promise<string> {
   if (argv[0] === 'hook') {
     // a host must never be blocked: every hook-path failure is empty output
@@ -118,6 +129,7 @@ export async function runCli(argv: string[], input: string): Promise<string> {
   }
   if (argv[0] === 'route') return route(argv.slice(1), input);
   if (argv[0] === 'index') return index(argv.slice(1));
+  if (argv[0] === 'history') return history();
   if (argv[0] !== 'doctor') throw new Error('UNKNOWN_COMMAND');
   let sqlite = false;
   try {

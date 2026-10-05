@@ -1,0 +1,10 @@
+{
+  "session_id": "synthetic-session-1",
+  "turn_id": "synthetic-turn-1",
+  "cwd": "C:/synthetic/project",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "mcp__synthetic__search",
+  "tool_input": { "q": "UNIQUE_ARGS_MARKER" },
+  "tool_response": { "result": "UNIQUE_RESPONSE_MARKER" },
+  "tool_use_id": "call_synthetic_1"
+}

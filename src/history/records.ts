@@ -1,4 +1,4 @@
-import type { Observation, Store, UsageRecord } from '../contracts.js';
+import type { AdapterInput, Observation, Store, UsageRecord } from '../contracts.js';
 import { storeError } from '../storage/database.js';
 
 const RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
@@ -40,6 +40,7 @@ export function appendUsage(store: Store, record: UsageRecord): void {
 /** Delete rows older than 30 days (boundary kept). Returns the number deleted. */
 export function pruneUsage(store: Store, nowMs: number): number {
   try {
+    store.db.prepare('DELETE FROM observed_events WHERE at_ms < ?').run(nowMs - RETENTION_MS);
     return Number(store.db.prepare('DELETE FROM usage WHERE at_ms < ?').run(nowMs - RETENTION_MS).changes);
   } catch (e) {
     throw storeError(e, 'STORE_WRITE_FAILED');
@@ -56,6 +57,31 @@ export function listUsage(store: Store, limit = 200): UsageRecord[] {
   } catch (e) {
     throw storeError(e, 'STORE_READ_FAILED');
   }
+}
+
+/**
+ * Save one observed event. With a host event id, a repeat delivery returns false and writes nothing.
+ * ponytail: without an id nothing can be deduped (distinct calls must not be guessed away).
+ */
+export function recordObservation(
+  store: Store, input: AdapterInput, obs: Observation, capabilityName: string, nowMs: number
+): boolean {
+  if (input.eventId !== undefined) {
+    try {
+      const r = store.db.prepare('INSERT OR IGNORE INTO observed_events (host, session_id, event_id, at_ms) VALUES (?, ?, ?, ?)')
+        .run(input.host, input.sessionId, input.eventId, nowMs);
+      if (Number(r.changes) === 0) return false;
+    } catch (e) {
+      throw storeError(e, 'STORE_WRITE_FAILED');
+    }
+  }
+  appendUsage(store, {
+    host: input.host, projectId: input.projectId as string, sessionId: input.sessionId,
+    capabilityId: obs.capabilityId, capabilityName, event: obs.kind,
+    result: obs.succeeded === true ? 'success' : obs.succeeded === false ? 'failure' : 'unknown',
+    elapsedMs: 0, atMs: nowMs
+  });
+  return true;
 }
 
 export function observedUse(event: Observation): boolean {
