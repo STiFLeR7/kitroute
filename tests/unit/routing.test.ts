@@ -94,3 +94,14 @@ test('reason codes are fixed and leak nothing', () => {
 test('unicode text does not throw', () => {
   assert.doesNotThrow(() => select(req({ text: 'résumé 日本語 🚀 \u0000 checkout' }), catalog, policy));
 });
+
+test('function words alone never match', () => {
+  const items = [
+    makeCapability({ id: 'dc', name: 'debug-checkout', description: 'Debug checkout payment errors', terms: [] }),
+    makeCapability({ id: 'dp', name: 'deploy', description: 'Deploy the service to production', terms: [] })
+  ];
+  assert.deepEqual(select(req({ text: 'debug the checkout error', phase: 'general' }), items, policy).ids, ['dc']);
+  const r = select(req({ text: 'can you please, the' }), items, policy);
+  assert.equal(r.status, 'abstain');
+  assert.deepEqual(r.reasonCodes, ['WEAK_MATCH']);
+});
