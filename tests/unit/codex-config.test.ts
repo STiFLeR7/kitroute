@@ -28,6 +28,18 @@ test('windows backslash vs forward slash, case-insensitive drive paths only', ()
   assert.deepEqual(pol([cap('C:\\Users\\X\\a\\SKILL.md')], blk('"c:/users/x/a/SKILL.md"', 'false')), ['disabled']);
   assert.deepEqual(pol([cap('/h/A/SKILL.md')], blk('"/h/a/SKILL.md"', 'false')), ['implicit']);
 });
+test('escaped Windows path disables matching skill', () => {
+  const t = blk('"C:\\\\Users\\\\me\\\\.agents\\\\skills\\\\x\\\\SKILL.md"', 'false');
+  assert.deepEqual(pol([cap('C:\\Users\\me\\.agents\\skills\\x\\SKILL.md'), cap('C:\\Users\\me\\.agents\\skills\\y\\SKILL.md')], t), ['disabled', 'implicit']);
+});
+test('escaped quote is decoded', () => {
+  assert.deepEqual(pol([cap('/h/a"b/SKILL.md')], blk('"/h/a\\"b/SKILL.md"', 'false')), ['disabled']);
+});
+test('unknown or unicode escape and unterminated string fail closed', () => {
+  for (const p of ['"/h/\\x/SKILL.md"', '"/h/\\u0041/SKILL.md"', '"/h/a/SKILL.md']) {
+    assert.deepEqual(pol([cap('/h/a/SKILL.md')], blk(p, 'false')), ['unknown'], p);
+  }
+});
 test('unparseable block fails closed', () => {
   for (const t of [
     '[[skills.config]]\nenabled = false\n',
