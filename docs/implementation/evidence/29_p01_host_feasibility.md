@@ -9,6 +9,7 @@ Tasks: P01.T3 (host feasibility and normalized input). Base commit: 842abbe (bra
 - Windows: Microsoft Windows [Version 10.0.26200.9550] (`cmd /c ver`)
 - Model IDs: the Claude Code run used the host default model (the `init` event reports a `model` field; value not recorded). Codex configured model was rejected (see below).
 - Fedora/Linux: NOT AVAILABLE. No Fedora or Linux result is claimed.
+- Claude model ID for live runs: not recorded (gap; re-record on the next live run).
 
 ## Method and safety
 All runs used a mkdtemp directory outside the repo, a temp `--settings` file for Claude, and only synthetic prompts. Nothing under ~/.claude, ~/.codex or ~/.agents was edited; no credentials copied; no permission, sandbox or hook-trust bypass flag was used. Temp dir deleted afterwards. Note: the user's real Claude user-level hooks still ran alongside the temp settings (settings are additive), and the Claude run inherited permission_mode `auto` from user config.
