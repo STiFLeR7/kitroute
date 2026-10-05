@@ -1,10 +1,11 @@
 import type { Adapter, Capability } from '../contracts.js';
 import { discoverSkills } from '../discovery/skills.js';
-import { normalizePost, normalizePrompt, observePost, renderPrompt, validatePromptOutput } from './shared.js';
+import { normalizePost, normalizeStart, normalizePrompt, observePost, renderPrompt, validatePromptOutput } from './shared.js';
 
 export const codex: Adapter = {
   host: 'codex',
-  normalize: (raw, event) => normalizePrompt('codex', raw, event) ?? normalizePost('codex', raw, event),
+  normalize: (raw, event) => normalizePrompt('codex', raw, event) ?? normalizeStart('codex', raw, event)
+    ?? normalizePost('codex', raw, event),
   discover: (context) => discoverSkills(context),
   render: renderPrompt,
   validateOutput: validatePromptOutput,

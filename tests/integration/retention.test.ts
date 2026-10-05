@@ -40,7 +40,7 @@ test('v1 database migrates to v2 and keeps inventory', async () => {
       PRAGMA user_version = 1;`);
     old.close();
     const store = openStore(path);
-    assert.equal((store.db.prepare('PRAGMA user_version').get() as { user_version: number }).user_version, 3);
+    assert.equal((store.db.prepare('PRAGMA user_version').get() as { user_version: number }).user_version, 4);
     assert.equal(store.db.prepare('SELECT COUNT(*) AS n FROM capabilities').get()!.n, 1);
     appendUsage(store, rec(5));
     assert.equal(listUsage(store).length, 1);

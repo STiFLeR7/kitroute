@@ -24,7 +24,7 @@ test('project isolation', () => {
   } finally { store.close(); }
 });
 
-test('reopen keeps data and user_version = 3; migration is idempotent', async () => {
+test('reopen keeps data and user_version = 4; migration is idempotent', async () => {
   await tmp(async (dir) => {
     const path = join(dir, 'k.db');
     let store = openStore(path);
@@ -33,7 +33,7 @@ test('reopen keeps data and user_version = 3; migration is idempotent', async ()
     try {
       assert.equal(listInventory(store, 'codex', 'a').length, 1);
       const v = store.db.prepare('PRAGMA user_version').get() as { user_version: number };
-      assert.equal(v.user_version, 3);
+      assert.equal(v.user_version, 4);
     } finally { store.close(); }
   });
 });

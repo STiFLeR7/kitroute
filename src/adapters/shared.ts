@@ -1,6 +1,7 @@
 import type { AdapterInput, Capability, Host, Observation, RouteResult } from '../contracts.js';
 
 const EVENT = 'UserPromptSubmit';
+const START = 'SessionStart';
 const obj = (v: unknown): Record<string, unknown> | null =>
   v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
 
@@ -15,13 +16,21 @@ export function normalizePrompt(host: Host, raw: unknown, event: string, turnKey
   return input;
 }
 
+/** SessionStart: documented for both hosts (source: startup/resume/clear/compact); only ids are copied, never source. */
+export function normalizeStart(host: Host, raw: unknown, event: string): AdapterInput | null {
+  if (event !== START) return null;
+  const v = obj(raw);
+  if (!v || typeof v.session_id !== 'string' || typeof v.cwd !== 'string') return null;
+  return { host, event, cwd: v.cwd, sessionId: v.session_id };
+}
+
 export function renderPrompt(result: RouteResult, event: string): string {
-  if (event !== EVENT || result.status !== 'selected' || result.guidance.trim() === '') return '';
-  return JSON.stringify({ hookSpecificOutput: { hookEventName: EVENT, additionalContext: result.guidance } });
+  if ((event !== EVENT && event !== START) || result.status !== 'selected' || result.guidance.trim() === '') return '';
+  return JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: result.guidance } });
 }
 
 export function validatePromptOutput(output: string, event: string): string | null {
-  if (event !== EVENT) return null;
+  if (event !== EVENT && event !== START) return null;
   if (output === '') return output;
   let v: unknown;
   try {
@@ -33,7 +42,7 @@ export function validatePromptOutput(output: string, event: string): string | nu
   if (!top || Object.keys(top).join() !== 'hookSpecificOutput') return null;
   const h = obj(top.hookSpecificOutput);
   if (!h || Object.keys(h).sort().join() !== 'additionalContext,hookEventName') return null;
-  return h.hookEventName === EVENT && typeof h.additionalContext === 'string' && h.additionalContext !== '' ? output : null;
+  return h.hookEventName === event && typeof h.additionalContext === 'string' && h.additionalContext !== '' ? output : null;
 }
 
 /** Post-tool events only. Copies identifiers and the skill name; never tool_input/response/error text. */

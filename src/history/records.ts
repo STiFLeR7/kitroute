@@ -41,6 +41,7 @@ export function appendUsage(store: Store, record: UsageRecord): void {
 export function pruneUsage(store: Store, nowMs: number): number {
   try {
     store.db.prepare('DELETE FROM observed_events WHERE at_ms < ?').run(nowMs - RETENTION_MS);
+    store.db.prepare('DELETE FROM session_state WHERE updated_at < ?').run(nowMs - RETENTION_MS);
     return Number(store.db.prepare('DELETE FROM usage WHERE at_ms < ?').run(nowMs - RETENTION_MS).changes);
   } catch (e) {
     throw storeError(e, 'STORE_WRITE_FAILED');

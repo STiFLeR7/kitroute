@@ -28,7 +28,8 @@ CREATE TABLE usage (
   at_ms INTEGER NOT NULL
 );
 CREATE INDEX usage_at ON usage(at_ms);`, `
-CREATE TABLE observed_events (host TEXT NOT NULL, session_id TEXT NOT NULL, event_id TEXT NOT NULL, at_ms INTEGER NOT NULL, PRIMARY KEY (host, session_id, event_id));`];
+CREATE TABLE observed_events (host TEXT NOT NULL, session_id TEXT NOT NULL, event_id TEXT NOT NULL, at_ms INTEGER NOT NULL, PRIMARY KEY (host, session_id, event_id));`, `
+CREATE TABLE session_state (host TEXT NOT NULL, session_id TEXT NOT NULL, project_id TEXT NOT NULL, inventory_revision TEXT NOT NULL, phase TEXT NOT NULL, signature TEXT NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (host, session_id));`];
 
 /** Map any SQLite failure to a fixed code; never echo paths or SQL. */
 export function storeError(e: unknown, fallback: string): Error {
