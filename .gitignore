@@ -1,0 +1,4 @@
+node_modules/
+dist/
+evaluation/results/
+.superpowers/
