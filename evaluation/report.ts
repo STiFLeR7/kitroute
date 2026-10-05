@@ -20,6 +20,32 @@ export function aggregate(results: TrialResult[]): Metrics {
   };
 }
 
+export interface Gates {
+  maxMeanAddedMs: number;
+  maxMeanGuidanceChars: number;
+  maxUnnecessarySelections: number;
+  maxExplicitReminders: number;
+}
+
+export function decideRelease(metrics: Metrics, baseline: Metrics, gates: Gates) {
+  const reasons: string[] = [];
+  if (metrics.successRate < baseline.successRate) reasons.push('SUCCESS_REGRESSION');
+  if (metrics.meanAddedMs > gates.maxMeanAddedMs) reasons.push('EXCESS_OVERHEAD');
+  if (metrics.meanGuidanceChars > gates.maxMeanGuidanceChars) reasons.push('EXCESS_CONTEXT');
+  if (metrics.unnecessarySelections > gates.maxUnnecessarySelections) reasons.push('EXTRA_SELECTIONS');
+  if (metrics.explicitReminders > gates.maxExplicitReminders) reasons.push('EXTRA_REMINDERS');
+  const improves = metrics.successRate > baseline.successRate ||
+    metrics.explicitReminders < baseline.explicitReminders;
+  if (!improves) reasons.push('NO_MEASURED_BENEFIT');
+  return { pass: reasons.length === 0, reasons };
+}
+
+export function compareAll(metrics: Metrics, baselines: Record<string, Metrics>, gates: Gates) {
+  const reasons = Object.entries(baselines).flatMap(([name, baseline]) =>
+    decideRelease(metrics, baseline, gates).reasons.map(reason => `${name}:${reason}`));
+  return { pass: reasons.length === 0, reasons };
+}
+
 export function aggregateBy(results: TrialResult[], key: 'condition' | 'host' | 'catalogSize'): Record<string, Metrics> {
   const groups = new Map<string, TrialResult[]>();
   for (const result of results) {
