@@ -191,7 +191,7 @@ export interface UninstallResult {
 | runWorker(workerPath: string, host: Host, event: string, input: string, validateOutput: (raw: string) => string \| null, deadlineMs?: number): Promise<string> | Bound the isolated worker, drain stderr, and return only adapter-validated output. |
 | advanceState(previous: SessionState, input: AdapterInput, ids: string[]): SessionState | Update phase and deduplication signature without storing prompt text. |
 | detectHosts(homeRoot: string): Promise<Host[]> | Detect supported installations without installing agents or rewriting their configuration. |
-| planSetup(files: Record<string, string>, entries: Patch[]): SetupPlan | Preview exact owned entries and report malformed/conflicting configuration. |
+| planSetup(files: Record<string, string>, entries: Patch[], manifest?: ManifestEntry[]): SetupPlan | Preview exact owned entries and report malformed/conflicting configuration. When the manifest is supplied, plan the removal of stale owned entries that are unchanged. |
 | applySetup(plan: SetupPlan, root: string): void | Recheck file hashes, back up, and atomically apply owned entries. |
 | uninstall(files: Record<string, string>, ownedPatches: Patch[]): UninstallResult | Remove exact owned entries and report conflicts while preserving user-modified entries. |
 
