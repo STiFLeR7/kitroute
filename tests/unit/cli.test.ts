@@ -28,13 +28,17 @@ test('unknown command rejects with UNKNOWN_COMMAND', async () => {
 
 test('malformed input is never echoed in errors', async () => {
   const secret = 'SECRET-PROMPT-{"broken":';
-  for (const cmd of ['bogus', 'route', 'hook']) {
+  for (const cmd of ['bogus', 'route']) {
     await assert.rejects(runCli([cmd], secret), (e: Error) => {
       assert.equal(e.message.includes('SECRET'), false);
       assert.equal(String(e.stack).includes('SECRET'), false);
       return true;
     });
   }
+});
+
+test('hook failures return empty instead of throwing', async () => {
+  assert.equal(await runCli(['hook'], 'SECRET'), '');
 });
 
 test('process: doctor works from a cwd containing a space', () => {

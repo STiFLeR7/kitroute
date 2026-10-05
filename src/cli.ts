@@ -8,7 +8,7 @@ import { skillRoots } from './discovery/skills.js';
 import { dataDir, normalizeProject, projectScopeId } from './paths.js';
 import { select } from './routing/select.js';
 
-const POLICY: RoutingPolicy = { maxSelections: 3, minScore: 0.2, maxGuidanceChars: 2000 };
+export const POLICY: RoutingPolicy = { maxSelections: 3, minScore: 0.2, maxGuidanceChars: 2000 };
 const PHASES: Phase[] = ['general', 'reproduce', 'implement', 'verify'];
 const FIXED = /^[A-Z_]+$/;
 
@@ -42,7 +42,7 @@ function parseRequest(input: string, host: Host, projectId: string): RouteReques
   };
 }
 
-async function setup(host: Host, project: string) {
+export async function setup(host: Host, project: string) {
   const root = normalizeProject(project);
   const projectId = projectScopeId(root, 'default'); // default profile is a recorded ruling
   const home = homedir();
@@ -57,7 +57,7 @@ async function setup(host: Host, project: string) {
 }
 
 // node:sqlite is imported lazily so unrelated commands stay free of its ExperimentalWarning.
-async function openDefaultStore() {
+export async function openDefaultStore() {
   const { openStore } = await import('./storage/database.js');
   const dir = dataDir();
   await mkdir(dir, { recursive: true });
@@ -106,6 +106,16 @@ async function index(args: string[]): Promise<string> {
 }
 
 export async function runCli(argv: string[], input: string): Promise<string> {
+  if (argv[0] === 'hook') {
+    // a host must never be blocked: every hook-path failure is empty output
+    try {
+      const f = argv.slice(1);
+      if (f.length !== 4 || f[0] !== '--host' || f[2] !== '--event' ||
+        (f[1] !== 'claude-code' && f[1] !== 'codex')) return '';
+      const { handleHook } = await import('./hooks/handle.js');
+      return await handleHook(f[1], f[3]!, input);
+    } catch { return ''; }
+  }
   if (argv[0] === 'route') return route(argv.slice(1), input);
   if (argv[0] === 'index') return index(argv.slice(1));
   if (argv[0] !== 'doctor') throw new Error('UNKNOWN_COMMAND');
