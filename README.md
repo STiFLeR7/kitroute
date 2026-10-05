@@ -37,7 +37,7 @@ Shows what setup would add to your host configuration. It writes nothing.
 
 ### kitroute setup
 
-Adds Kitroute hook entries to `~/.claude/settings.json` and `~/.codex/hooks.json`, for each host that is present and supported. It keeps your other settings. It records what it added in a manifest in the Kitroute data folder, and saves a backup there. Run `setup --dry-run` first and read the result.
+Adds Kitroute hook entries to `~/.claude/settings.json` and `~/.codex/hooks.json`, for each host that is present and supported. On Windows, setup currently skips Codex, because the hook command form has not yet been proven in a live Codex session there. It keeps your other settings. It records what it added in a manifest in the Kitroute data folder, and saves a backup there. Run `setup --dry-run` first and read the result.
 
 ### kitroute uninstall --dry-run
 
