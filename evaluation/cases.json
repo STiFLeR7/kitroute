@@ -1,0 +1,380 @@
+[
+  {
+    "id": "dev-rel-debug",
+    "split": "development",
+    "category": "relevant",
+    "request": "reproduce the crash and show the stack trace",
+    "projectFixture": "evaluation/fixtures/dev-rel-debug",
+    "acceptableCapabilityIds": [
+      "debug-failing-test"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-rel-tests",
+    "split": "development",
+    "category": "relevant",
+    "request": "add unit tests for coverage of the parser",
+    "projectFixture": "evaluation/fixtures/dev-rel-tests",
+    "acceptableCapabilityIds": [
+      "author-unit-tests"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-rel-refactor",
+    "split": "development",
+    "category": "relevant",
+    "request": "refactor the parser and remove duplication",
+    "projectFixture": "evaluation/fixtures/dev-rel-refactor",
+    "acceptableCapabilityIds": [
+      "refactor-module"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-rel-api",
+    "split": "development",
+    "category": "relevant",
+    "request": "need an openapi reference for the endpoint",
+    "projectFixture": "evaluation/fixtures/dev-rel-api",
+    "acceptableCapabilityIds": [
+      "document-api"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-rel-sql",
+    "split": "development",
+    "category": "relevant",
+    "request": "add a column to the users table schema",
+    "projectFixture": "evaluation/fixtures/dev-rel-sql",
+    "acceptableCapabilityIds": [
+      "sql-migration"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-rel-perf",
+    "split": "development",
+    "category": "relevant",
+    "request": "page latency is slow find the bottleneck",
+    "projectFixture": "evaluation/fixtures/dev-rel-perf",
+    "acceptableCapabilityIds": [
+      "profile-performance"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-ovl-debug-tests",
+    "split": "development",
+    "category": "overlapping",
+    "request": "debug the failing unit tests",
+    "projectFixture": "evaluation/fixtures/dev-ovl-debug-tests",
+    "acceptableCapabilityIds": [
+      "debug-failing-test",
+      "author-unit-tests"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-ovl-perf-security",
+    "split": "development",
+    "category": "overlapping",
+    "request": "profile performance and audit security vulnerability",
+    "projectFixture": "evaluation/fixtures/dev-ovl-perf-security",
+    "acceptableCapabilityIds": [
+      "profile-performance",
+      "review-security"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-ovl-release-api",
+    "split": "development",
+    "category": "overlapping",
+    "request": "release changelog and api reference",
+    "projectFixture": "evaluation/fixtures/dev-ovl-release-api",
+    "acceptableCapabilityIds": [
+      "prepare-release",
+      "document-api"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-none-thanks",
+    "split": "development",
+    "category": "no-specialist",
+    "request": "thanks looks good",
+    "projectFixture": "evaluation/fixtures/dev-none-thanks",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-none-plan",
+    "split": "development",
+    "category": "no-specialist",
+    "request": "summarize our plan for tomorrow",
+    "projectFixture": "evaluation/fixtures/dev-none-plan",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-none-continue",
+    "split": "development",
+    "category": "no-specialist",
+    "request": "nice work let us continue",
+    "projectFixture": "evaluation/fixtures/dev-none-continue",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-unav-deploy",
+    "split": "development",
+    "category": "unavailable",
+    "request": "deploy to production and rollout",
+    "projectFixture": "evaluation/fixtures/dev-unav-deploy",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "dev-unav-translate",
+    "split": "development",
+    "category": "unavailable",
+    "request": "translate the strings into another language locale",
+    "projectFixture": "evaluation/fixtures/dev-unav-translate",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-rel-debug",
+    "split": "held-out",
+    "category": "relevant",
+    "request": "crash with exception investigate stack",
+    "projectFixture": "evaluation/fixtures/held-rel-debug",
+    "acceptableCapabilityIds": [
+      "debug-failing-test"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-rel-tests",
+    "split": "held-out",
+    "category": "relevant",
+    "request": "need mock and assertions for the checkout",
+    "projectFixture": "evaluation/fixtures/held-rel-tests",
+    "acceptableCapabilityIds": [
+      "author-unit-tests"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-rel-refactor",
+    "split": "held-out",
+    "category": "relevant",
+    "request": "extract function and cleanup the handler",
+    "projectFixture": "evaluation/fixtures/held-rel-refactor",
+    "acceptableCapabilityIds": [
+      "refactor-module"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-rel-api",
+    "split": "held-out",
+    "category": "relevant",
+    "request": "describe each endpoint in openapi",
+    "projectFixture": "evaluation/fixtures/held-rel-api",
+    "acceptableCapabilityIds": [
+      "document-api"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-rel-sql",
+    "split": "held-out",
+    "category": "relevant",
+    "request": "create an index on the migration for the database",
+    "projectFixture": "evaluation/fixtures/held-rel-sql",
+    "acceptableCapabilityIds": [
+      "sql-migration"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-rel-security",
+    "split": "held-out",
+    "category": "relevant",
+    "request": "scan for vulnerability and leaked secrets",
+    "projectFixture": "evaluation/fixtures/held-rel-security",
+    "acceptableCapabilityIds": [
+      "review-security"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-ovl-perf-sql",
+    "split": "held-out",
+    "category": "overlapping",
+    "request": "profile slow queries and optimize the schema",
+    "projectFixture": "evaluation/fixtures/held-ovl-perf-sql",
+    "acceptableCapabilityIds": [
+      "profile-performance",
+      "sql-migration"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-ovl-refactor-tests",
+    "split": "held-out",
+    "category": "overlapping",
+    "request": "refactor the module and add coverage",
+    "projectFixture": "evaluation/fixtures/held-ovl-refactor-tests",
+    "acceptableCapabilityIds": [
+      "refactor-module",
+      "author-unit-tests"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-ovl-release-security",
+    "split": "held-out",
+    "category": "overlapping",
+    "request": "tag a release and check the vulnerability",
+    "projectFixture": "evaluation/fixtures/held-ovl-release-security",
+    "acceptableCapabilityIds": [
+      "prepare-release",
+      "review-security"
+    ],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-none-bye",
+    "split": "held-out",
+    "category": "no-specialist",
+    "request": "great thanks bye",
+    "projectFixture": "evaluation/fixtures/held-none-bye",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-none-monads",
+    "split": "held-out",
+    "category": "no-specialist",
+    "request": "can you explain monads in haskell",
+    "projectFixture": "evaluation/fixtures/held-none-monads",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-none-morning",
+    "split": "held-out",
+    "category": "no-specialist",
+    "request": "good morning",
+    "projectFixture": "evaluation/fixtures/held-none-morning",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-unav-ship",
+    "split": "held-out",
+    "category": "unavailable",
+    "request": "ship it to production and rollback",
+    "projectFixture": "evaluation/fixtures/held-unav-ship",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  },
+  {
+    "id": "held-unav-i18n",
+    "split": "held-out",
+    "category": "unavailable",
+    "request": "i18n locale change",
+    "projectFixture": "evaluation/fixtures/held-unav-i18n",
+    "acceptableCapabilityIds": [],
+    "assertionCommand": [
+      "node",
+      "check.mjs"
+    ]
+  }
+]

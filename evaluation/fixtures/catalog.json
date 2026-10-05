@@ -1,0 +1,248 @@
+[
+  {
+    "id": "debug-failing-test",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "debug-failing-test",
+    "description": "Debug failing test from stack trace",
+    "terms": [
+      "debug",
+      "failing",
+      "stack",
+      "trace",
+      "reproduce",
+      "error",
+      "crash",
+      "exception"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/debug-failing-test/SKILL.md",
+    "target": "/synthetic/debug-failing-test/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "author-unit-tests",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "author-unit-tests",
+    "description": "Author unit tests",
+    "terms": [
+      "unit",
+      "tests",
+      "coverage",
+      "assertions",
+      "mock"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/author-unit-tests/SKILL.md",
+    "target": "/synthetic/author-unit-tests/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "refactor-module",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "refactor-module",
+    "description": "Refactor module",
+    "terms": [
+      "refactor",
+      "extract",
+      "duplication",
+      "cleanup",
+      "module"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/refactor-module/SKILL.md",
+    "target": "/synthetic/refactor-module/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "document-api",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "document-api",
+    "description": "Document API endpoint",
+    "terms": [
+      "document",
+      "api",
+      "endpoint",
+      "openapi",
+      "reference"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/document-api/SKILL.md",
+    "target": "/synthetic/document-api/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "sql-migration",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "sql-migration",
+    "description": "Database schema migration",
+    "terms": [
+      "database",
+      "schema",
+      "migration",
+      "sql",
+      "table",
+      "column",
+      "index"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/sql-migration/SKILL.md",
+    "target": "/synthetic/sql-migration/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "profile-performance",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "profile-performance",
+    "description": "Profile performance",
+    "terms": [
+      "profile",
+      "performance",
+      "slow",
+      "latency",
+      "bottleneck",
+      "benchmark"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/profile-performance/SKILL.md",
+    "target": "/synthetic/profile-performance/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "review-security",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "review-security",
+    "description": "Review security",
+    "terms": [
+      "security",
+      "vulnerability",
+      "injection",
+      "secrets",
+      "audit"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/review-security/SKILL.md",
+    "target": "/synthetic/review-security/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "prepare-release",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "prepare-release",
+    "description": "Prepare release",
+    "terms": [
+      "release",
+      "changelog",
+      "version",
+      "tag",
+      "semver"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/prepare-release/SKILL.md",
+    "target": "/synthetic/prepare-release/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "deploy-production",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "deploy-production",
+    "description": "Deploy production",
+    "terms": [
+      "deploy",
+      "production",
+      "rollout",
+      "rollback",
+      "ship"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "explicit-only",
+    "availability": "available",
+    "revision": "eval-v1",
+    "source": "/synthetic/deploy-production/SKILL.md",
+    "target": "/synthetic/deploy-production/SKILL.md",
+    "action": "load-guidance"
+  },
+  {
+    "id": "translate-docs",
+    "host": "codex",
+    "projectId": "eval",
+    "kind": "skill",
+    "name": "translate-docs",
+    "description": "Translate docs",
+    "terms": [
+      "translate",
+      "localization",
+      "i18n",
+      "locale",
+      "language"
+    ],
+    "phases": [
+      "general"
+    ],
+    "policy": "implicit",
+    "availability": "unavailable",
+    "revision": "eval-v1",
+    "source": "/synthetic/translate-docs/SKILL.md",
+    "target": "/synthetic/translate-docs/SKILL.md",
+    "action": "load-guidance"
+  }
+]
