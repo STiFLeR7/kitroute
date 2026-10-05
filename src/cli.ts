@@ -194,5 +194,9 @@ export async function runCli(argv: string[], input: string): Promise<string> {
   } catch {
     // sqlite stays false
   }
-  return JSON.stringify({ command: 'doctor', runtime: process.version, sqlite });
+  const { detectStatus } = await import('./setup/detect.js');
+  const status = await detectStatus(homedir());
+  const hosts = status.map(({ host, present, version, supported, note }) => ({ host, present, version, supported, note }));
+  const trust = status.some(s => s.host === 'codex' && s.present) ? [CODEX_NOTE] : [];
+  return JSON.stringify({ command: 'doctor', runtime: process.version, sqlite, hosts, trust });
 }

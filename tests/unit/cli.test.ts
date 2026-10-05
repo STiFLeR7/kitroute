@@ -16,9 +16,17 @@ test('doctor returns bounded structured status', async () => {
   assert.equal(typeof result.runtime, 'string');
   assert.equal(typeof result.sqlite, 'boolean');
   assert.equal('environment' in result, false);
-  assert.deepEqual(Object.keys(result).sort(), ['command', 'runtime', 'sqlite']);
-  assert.ok(raw.length < 200);
-  assert.equal(/[\\/]/.test(raw), false);
+  assert.deepEqual(Object.keys(result).sort(), ['command', 'hosts', 'runtime', 'sqlite', 'trust']);
+  assert.equal(result.hosts.length, 2);
+  for (const h of result.hosts) {
+    assert.deepEqual(Object.keys(h).sort(), ['host', 'note', 'present', 'supported', 'version']);
+    assert.equal(typeof h.present, 'boolean');
+  }
+  assert.ok(Array.isArray(result.trust));
+  if (result.hosts.some((h: { host: string; present: boolean }) => h.host === 'codex' && h.present)) assert.match(result.trust[0], /\/hooks/);
+  else assert.deepEqual(result.trust, []);
+  assert.ok(raw.length < 1000);
+  assert.equal(/[\\/]/.test(raw.replace(/\/hooks/g, '')), false);
 });
 
 test('unknown command rejects with UNKNOWN_COMMAND', async () => {
