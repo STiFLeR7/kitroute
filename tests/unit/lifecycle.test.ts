@@ -98,6 +98,19 @@ test('unchanged selection is deduped; project change, inventory change, compacti
   });
 });
 
+test('SessionStart stays silent without a saved task phase and never suppresses the next prompt', async () => {
+  await withEnv(async (tmp) => {
+    const a = mkProject(tmp, 'projA');
+    assert.equal(await run('SessionStart', start(a.proj, 'startup')), '');
+    assert.match(await run(EV, prompt(a.proj, 'debug the checkout failure')), /kt-checkout-debug/);
+    assert.equal(await run('SessionStart', start(a.proj, 'resume', 's2')), '');
+    // general-phase prompt (no keyword), then SessionStart
+    assert.match(await run(EV, prompt(a.proj, 'checkout', 's3')), /kt-checkout-debug/);
+    assert.equal(await run('SessionStart', start(a.proj, 'compact', 's3')), '');
+    assert.match(await run(EV, prompt(a.proj, 'checkout', 's3')), /kt-checkout-debug/);
+  });
+});
+
 test('no-match prompt keeps the previous phase and emits nothing', async () => {
   await withEnv(async (tmp) => {
     const a = mkProject(tmp, 'projA');

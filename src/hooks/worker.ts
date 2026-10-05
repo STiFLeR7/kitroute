@@ -46,9 +46,15 @@ async function main(): Promise<void> {
     const adapter = s.adapter;
     const scoped = { ...input, projectId, inventoryRevision: revision };
     if (event === 'SessionStart') {
-      // Old context may be gone after resume/compaction: reroute from the saved phase and re-emit.
-      const phase = loadState(store, host, input.sessionId, projectId, revision).phase;
-      try { store.db.prepare('DELETE FROM session_state WHERE host = ? AND session_id = ?').run(host, input.sessionId); } catch { /* ignore */ }
+      // Old context may be gone after resume/compaction. Reroute only from a saved task phase; else stay silent.
+      let saved: { project_id: string; phase: string } | undefined;
+      try {
+        saved = store.db.prepare('SELECT project_id, phase FROM session_state WHERE host = ? AND session_id = ?')
+          .get(host, input.sessionId) as typeof saved;
+        store.db.prepare('DELETE FROM session_state WHERE host = ? AND session_id = ?').run(host, input.sessionId);
+      } catch { /* ignore */ }
+      const phase = saved?.project_id === projectId ? PHASES.find(p => p === saved!.phase) : undefined;
+      if (!phase || phase === 'general') return;
       const result = select({ host, projectId, sessionId: input.sessionId, text: continuationText(phase), phase },
         currentAvailability(cached, undefined), POLICY);
       saveState(store, host, input.sessionId, projectId, revision, advanceState({ phase, signature: '' }, scoped, result.ids));
