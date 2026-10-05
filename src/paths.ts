@@ -1,5 +1,7 @@
 import { realpathSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 
 export function normalizeProject(root: string): string {
   let real: string;
@@ -18,4 +20,12 @@ export function normalizeProject(root: string): string {
 export function projectScopeId(normalizedRoot: string, profileId: string): string {
   const tuple = `${normalizedRoot.length}:${normalizedRoot}${profileId.length}:${profileId}`;
   return createHash('sha256').update(tuple).digest('hex');
+}
+
+/** Data directory (pure; caller creates it). */
+export function dataDir(): string {
+  const env = process.env;
+  if (env['KITROUTE_HOME']) return env['KITROUTE_HOME'];
+  if (process.platform === 'win32') return join(env['LOCALAPPDATA'] || join(homedir(), 'AppData', 'Local'), 'kitroute');
+  return join(env['XDG_DATA_HOME'] || join(homedir(), '.local', 'share'), 'kitroute');
 }

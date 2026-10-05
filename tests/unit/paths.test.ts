@@ -46,3 +46,11 @@ test('projectScopeId is stable, profile-sensitive and unambiguous', () => {
   assert.notEqual(projectScopeId('/r', 'p1'), projectScopeId('/r', 'p2'));
   assert.notEqual(projectScopeId('ab', 'c'), projectScopeId('a', 'bc'));
 });
+
+test('dataDir honors KITROUTE_HOME', async () => {
+  const { dataDir } = await import('../../src/paths.js');
+  const old = process.env['KITROUTE_HOME'];
+  process.env['KITROUTE_HOME'] = '/synthetic/data';
+  try { assert.equal(dataDir(), '/synthetic/data'); }
+  finally { if (old === undefined) delete process.env['KITROUTE_HOME']; else process.env['KITROUTE_HOME'] = old; }
+});

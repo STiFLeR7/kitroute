@@ -73,7 +73,7 @@ test('more than three relevant yields exactly three', () => {
   const r = select(req({ text: 'checkout', phase: 'general' }), catalog, policy);
   assert.equal(r.status, 'selected');
   assert.equal(r.ids.length, 3);
-  assert.equal(r.guidance, '');
+  assert.equal(r.guidance.split('\n').length, 3);
 });
 
 test('reason codes are fixed and leak nothing', () => {

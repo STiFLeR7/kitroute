@@ -1,8 +1,10 @@
+import { renderGuidance } from './guidance.js';
 import type { Capability, RouteRequest, RouteResult, RoutingPolicy } from '../contracts.js';
 
 export const REASON_SELECTED = 'SELECTED';
 export const REASON_NO_ELIGIBLE = 'NO_ELIGIBLE';
 export const REASON_WEAK_MATCH = 'WEAK_MATCH';
+export const GUIDANCE_BUDGET = 'GUIDANCE_BUDGET';
 
 export function select(request: RouteRequest, items: Capability[], policy: RoutingPolicy): RouteResult {
   const start = performance.now();
@@ -19,12 +21,14 @@ export function select(request: RouteRequest, items: Capability[], policy: Routi
   }).filter(candidate => candidate.score > 0 && candidate.score >= policy.minScore)
     .sort((a, b) => b.score - a.score || (a.item.id < b.item.id ? -1 : a.item.id > b.item.id ? 1 : 0));
   const selected = ranked.slice(0, policy.maxSelections);
-  const reason = selected.length ? REASON_SELECTED : eligible.length ? REASON_WEAK_MATCH : REASON_NO_ELIGIBLE;
+  const { ids, guidance } = renderGuidance(selected.map(({ item }) => item), policy);
+  const reason = ids.length ? REASON_SELECTED : selected.length ? GUIDANCE_BUDGET
+    : eligible.length ? REASON_WEAK_MATCH : REASON_NO_ELIGIBLE;
   return {
-    status: selected.length ? 'selected' : 'abstain',
-    ids: selected.map(candidate => candidate.item.id),
+    status: ids.length ? 'selected' : 'abstain',
+    ids,
     reasonCodes: [reason],
-    guidance: '',
+    guidance,
     elapsedMs: Math.round(performance.now() - start)
   };
 }
