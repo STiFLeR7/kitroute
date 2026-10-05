@@ -1,0 +1,9 @@
+{
+  "session_id": "synthetic-session-1",
+  "transcript_path": "C:\\synthetic\\transcript.jsonl",
+  "cwd": "C:\\synthetic\\project",
+  "prompt_id": "synthetic-prompt-1",
+  "permission_mode": "default",
+  "hook_event_name": "UserPromptSubmit",
+  "prompt": "Fix checkout"
+}
