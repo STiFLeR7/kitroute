@@ -178,7 +178,7 @@ export interface UninstallResult {
 | projectScopeId(normalizedRoot: string, profileId: string): string | Hash a length-delimited root/profile tuple. Use the result as projectId in every core record and database key. |
 | parseSkill(text: string, source: string, host: Host, projectId: string): Capability | Parse frontmatter and enforce invocation policy without treating malformed metadata as implicit permission. |
 | openStore(path: string): Store | Open and migrate SQLite with a bounded lock timeout. |
-| replaceInventory(store: Store, context: DiscoveryContext, items: Capability[]): void | Replace only the host/project scope after discovery completes. |
+| replaceInventory(store: Store, context: DiscoveryContext, items: Capability[], revision?: string): void | Replace only the host/project scope after discovery completes. Commit an optional source revision in the same transaction. |
 | listInventory(store: Store, host: Host, projectId: string): Capability[] | Return the current scope without borrowing another project's capabilities. |
 | ensureInventory(store: Store, adapter: Adapter, context: DiscoveryContext, revision: string): Promise<Capability[]> | Discover on first use or source revision change, replace atomically, and otherwise reuse metadata. |
 | currentAvailability(cached: Capability[], fresh: Capability[] \| undefined): Capability[] | Reset cached tools to unknown. Merge only current host/project inventory supplied for this request. |

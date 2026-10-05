@@ -10,6 +10,19 @@ Tech Stack: TypeScript, the runtime chosen in P01, SQLite behind Store, and Node
 
 Spec: [Contracts](../14_module_map_contracts.md), [storage ADR](../adrs/22_adr_002_sqlite_storage.md), and [routing ADR](../adrs/24_adr_004_selection_lifecycle.md).
 
+## Execution status
+
+Windows 11 with Node v24.11.0 only. Fedora has not been run. M1 is open: the user deferred Codex live entry and Fedora.
+
+| Task | State | Commits |
+| --- | --- | --- |
+| P02.T0 (added) Codex config.toml per-skill disable | Implemented and reviewed | 61092c5, 4fd7b2d |
+| P02.T1 | Implemented and reviewed. replaceInventory takes an optional atomic `revision` argument. | 19a34d9 |
+| P02.T2 | Implemented and reviewed | 9d684d3 |
+| P02.T3 | Implemented and reviewed. Function words are removed from queries by ruling. | 53f72cf, 1cf9230 |
+
+Evidence: [30](../evidence/30_p02_local_routing.md). M2 is not complete.
+
 ## Global constraints
 
 Select no more than three skills and tools together. Never borrow another project's entries. Exclude disabled and explicit-only capabilities from implicit routing. Preserve the 30-day history policy separately from the persistent index.
