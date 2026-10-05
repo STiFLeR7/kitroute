@@ -1,7 +1,9 @@
 import { mkdir, readFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import type { Adapter, Host, Phase, RouteRequest, RouteResult, RoutingPolicy } from './contracts.js';
+import type { Adapter, Host, Patch, Phase, RouteRequest, RouteResult, RoutingPolicy } from './contracts.js';
 import { claudeCode } from './adapters/claude-code.js';
 import { applyCodexConfig, codex } from './adapters/codex.js';
 import { skillRoots } from './discovery/skills.js';
@@ -116,6 +118,58 @@ async function history(): Promise<string> {
   }
 }
 
+const CODEX_NOTE = 'Codex requires reviewing new hooks with /hooks before they run; Kitroute does not bypass this.';
+const CLAUDE_EVENTS: Array<[string, string?]> = [['UserPromptSubmit'], ['PostToolUse', 'Skill'], ['PostToolUseFailure', 'Skill'], ['SessionStart']];
+const CODEX_EVENTS: Array<[string, string?]> = [['UserPromptSubmit'], ['PostToolUse'], ['SessionStart']];
+const text = (f: string) => { try { return readFileSync(f, 'utf8'); } catch { return ''; } };
+
+async function setupCommand(args: string[]): Promise<string> {
+  if (args.some(a => a !== '--dry-run')) throw new Error('INVALID_ARGUMENTS');
+  const dryRun = args.length === 1;
+  const [{ detectStatus }, { buildCommand, planSetup }, apply] = await Promise.all([
+    import('./setup/detect.js'), import('./setup/plan.js'), import('./setup/apply.js')]);
+  const home = homedir();
+  const hosts = await detectStatus(home);
+  const bin = fileURLToPath(new URL('../../bin/kitroute.mjs', import.meta.url));
+  const entries: Patch[] = [], conflicts: string[] = [];
+  for (const h of hosts.filter(s => s.present && s.supported)) {
+    const file = join(home, h.host === 'codex' ? '.codex' : '.claude', h.host === 'codex' ? 'hooks.json' : 'settings.json');
+    try {
+      entries.push({
+        file, beforeHash: '', add: (h.host === 'codex' ? CODEX_EVENTS : CLAUDE_EVENTS).map(([event, matcher]) => ({
+          event, ownedId: `kitroute-${h.host}-${event}`,
+          entry: { ...(matcher ? { matcher } : {}), hooks: [{ type: 'command', command: buildCommand(process.execPath, bin, h.host, event) }] }
+        }))
+      });
+    } catch (e) { conflicts.push(`${file}: ${e instanceof Error ? e.message : 'ERROR'}`); }
+  }
+  const plan = planSetup(Object.fromEntries(entries.map(e => [e.file, text(e.file)])), entries);
+  plan.conflicts.push(...conflicts);
+  if (!dryRun) apply.applySetup(plan, home);
+  return JSON.stringify({ command: 'setup', dryRun, hosts, plan, trust: [CODEX_NOTE] });
+}
+
+async function uninstallCommand(args: string[]): Promise<string> {
+  if (args.some(a => a !== '--dry-run')) throw new Error('INVALID_ARGUMENTS');
+  const dryRun = args.length === 1;
+  const [{ uninstall, sha256 }, apply] = await Promise.all([import('./setup/plan.js'), import('./setup/apply.js')]);
+  const manifest = apply.readManifest();
+  const patches = apply.toPatches(manifest);
+  const before = Object.fromEntries(patches.map(p => [p.file, text(p.file)]));
+  const result = uninstall(before, patches);
+  const changed = patches.map(p => p.file).filter(f => result.files[f] !== before[f]);
+  if (!dryRun && changed.length) {
+    apply.commit(changed.map(f => ({ file: f, before: before[f]!, beforeHash: sha256(before[f]!), after: result.files[f]! })));
+    const { isDeepStrictEqual } = await import('node:util');
+    const stillThere = (m: { file: string; event: string; entry: unknown }) => {
+      const hooks = (JSON.parse(text(m.file) || '{}') as { hooks?: Record<string, unknown[]> }).hooks ?? {};
+      return (hooks[m.event] ?? []).some(e => isDeepStrictEqual(e, m.entry));
+    };
+    apply.writeManifest(manifest.filter(stillThere));
+  }
+  return JSON.stringify({ command: 'uninstall', dryRun, changed, conflicts: result.conflicts });
+}
+
 export async function runCli(argv: string[], input: string): Promise<string> {
   if (argv[0] === 'hook') {
     // a host must never be blocked: every hook-path failure is empty output
@@ -130,6 +184,8 @@ export async function runCli(argv: string[], input: string): Promise<string> {
   if (argv[0] === 'route') return route(argv.slice(1), input);
   if (argv[0] === 'index') return index(argv.slice(1));
   if (argv[0] === 'history') return history();
+  if (argv[0] === 'setup') return setupCommand(argv.slice(1));
+  if (argv[0] === 'uninstall') return uninstallCommand(argv.slice(1));
   if (argv[0] !== 'doctor') throw new Error('UNKNOWN_COMMAND');
   let sqlite = false;
   try {
