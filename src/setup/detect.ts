@@ -17,10 +17,15 @@ const below = (v: number[], floor: string) => {
   return false;
 };
 
-// shell:false, 3 s timeout. ponytail: Windows npm .cmd shims fail to spawn, so the version is reported unknown.
-const defaultProbe: Probe = host => new Promise(resolve =>
-  execFile(BINS[host], ['--version'], { timeout: 3000, shell: false, windowsHide: true }, (err, out) =>
-    resolve(err ? null : (semver(String(out))?.join('.') ?? null))));
+// shell:false, 3 s timeout.
+// On win32 the npm .cmd shim runs through cmd.exe with fixed args; the binary name is a constant.
+const defaultProbe: Probe = host => new Promise(resolve => {
+  const win = process.platform === 'win32';
+  const file = win ? process.env['ComSpec'] || 'cmd.exe' : BINS[host];
+  const args = win ? ['/d', '/s', '/c', `${BINS[host]} --version`] : ['--version'];
+  execFile(file, args, { timeout: 3000, shell: false, windowsHide: true }, (err, out) =>
+    resolve(err ? null : (semver(String(out))?.join('.') ?? null)));
+});
 
 export async function detectStatus(homeRoot: string, probe: Probe = defaultProbe): Promise<HostStatus[]> {
   const result: HostStatus[] = [];

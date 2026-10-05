@@ -143,7 +143,7 @@ async function setupCommand(args: string[]): Promise<string> {
       });
     } catch (e) { conflicts.push(`${file}: ${e instanceof Error ? e.message : 'ERROR'}`); }
   }
-  const plan = planSetup(Object.fromEntries(entries.map(e => [e.file, text(e.file)])), entries);
+  const plan = planSetup(Object.fromEntries(entries.map(e => [e.file, text(e.file)])), entries, apply.toPatches(apply.readManifest()));
   plan.conflicts.push(...conflicts);
   if (!dryRun) apply.applySetup(plan, home);
   return JSON.stringify({ command: 'setup', dryRun, hosts, plan, trust: [CODEX_NOTE] });

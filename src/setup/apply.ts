@@ -2,7 +2,8 @@ import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync 
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import type { Patch, SetupPlan } from '../contracts.js';
 import { dataDir } from '../paths.js';
-import { addEntries, sha256 } from './plan.js';
+import { isDeepStrictEqual } from 'node:util';
+import { addEntries, sha256, type PlanPatch } from './plan.js';
 
 export interface Change { file: string; before: string; after: string; beforeHash: string }
 export interface ApplyOptions { rename?: (from: string, to: string) => void }
@@ -55,17 +56,22 @@ export function commit(changes: Change[], opts: ApplyOptions = {}): void {
 }
 
 /** Absolute patch.file paths are used as-is (root is ignored); relative ones resolve against root. */
-export function applySetup(plan: SetupPlan, root: string, opts: ApplyOptions = {}): void {
+export function applySetup(plan: { patches: PlanPatch[] } & Partial<SetupPlan>, root: string, opts: ApplyOptions = {}): void {
   const abs = (f: string) => (isAbsolute(f) ? f : resolve(root, f));
   const changes: Change[] = plan.patches.map(p => {
     const file = abs(p.file), before = read(file);
     if (sha256(before) !== p.beforeHash) throw new Error(`HASH_CHANGED ${file}`);
-    return { file, before, beforeHash: p.beforeHash, after: addEntries(before, p.add) };
+    return { file, before, beforeHash: p.beforeHash, after: addEntries(before, p.add, p.remove) };
   });
   commit(changes, opts);
-  const m = readManifest();
-  for (const p of plan.patches) for (const a of p.add) {
-    if (!m.some(x => x.file === abs(p.file) && x.ownedId === a.ownedId && x.event === a.event)) m.push({ file: abs(p.file), ...a });
+  // identity is (file, event, deep-equal entry); ownedId may repeat across rows
+  const same = (x: ManifestEntry, file: string, a: Patch['add'][number]) =>
+    x.file === file && x.event === a.event && isDeepStrictEqual(x.entry, a.entry);
+  let m = readManifest();
+  for (const p of plan.patches) {
+    const file = abs(p.file);
+    m = m.filter(x => !(p.remove ?? []).some(r => same(x, file, r)));
+    for (const a of p.add) if (!m.some(x => same(x, file, a))) m.push({ file, ...a });
   }
   writeManifest(m);
 }

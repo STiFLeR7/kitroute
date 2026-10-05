@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import type { Patch } from '../../src/contracts.js';
 import { detectHosts, detectStatus } from '../../src/setup/detect.js';
 import { buildCommand, planSetup, uninstall } from '../../src/setup/plan.js';
-import { applySetup } from '../../src/setup/apply.js';
+import { applySetup, readManifest, toPatches } from '../../src/setup/apply.js';
 
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const tmp = mkdtempSync(join(tmpdir(), 'kit-setup-'));
@@ -209,4 +209,34 @@ test('CLI: no host means no changes; dry-run is immutable; setup and uninstall r
   const left = JSON.parse(readFileSync(cf, 'utf8'));
   assert.equal(left.theme, 'light');
   assert.deepEqual(left.hooks, {});
+});
+
+test('repeated setup with a changed command replaces the stale owned entry', () => {
+  const d = dir(), f = join(d, 'settings.json');
+  const user = { hooks: [{ type: 'command', command: 'echo user' }] };
+  writeFileSync(f, JSON.stringify({ hooks: { UserPromptSubmit: [user] } }));
+  const run = (cmd: string) => {
+    const p = owned(f, cmd);
+    const plan = planSetup({ [f]: readFileSync(f, 'utf8') }, [p], toPatches(readManifest()));
+    applySetup(plan, d);
+    return plan;
+  };
+  run('node A.mjs hook');
+  const plan = run('node B.mjs hook');
+  assert.equal(plan.patches[0]!.remove!.length, 1);
+  const arr = JSON.parse(readFileSync(f, 'utf8')).hooks.UserPromptSubmit;
+  assert.equal(arr.length, 2);
+  assert.deepEqual(arr[0], user);
+  assert.equal(arr[1].hooks[0].command, 'node B.mjs hook');
+  const m = readManifest().filter(x => x.file === f);
+  assert.equal(m.length, 1);
+  assert.equal(m[0]!.entry['hooks'] && (m[0]!.entry['hooks'] as Array<{ command: string }>)[0]!.command, 'node B.mjs hook');
+  const r = uninstall({ [f]: readFileSync(f, 'utf8') }, toPatches(m));
+  assert.deepEqual(JSON.parse(r.files[f]!).hooks.UserPromptSubmit, [user]);
+  assert.deepEqual(r.conflicts, []);
+  // an edited stale entry stays and is reported
+  writeFileSync(f, JSON.stringify({ hooks: { UserPromptSubmit: [{ hooks: [{ type: 'command', command: 'node B.mjs hook', timeout: 1 }] }] } }));
+  const edited = planSetup({ [f]: readFileSync(f, 'utf8') }, [owned(f, 'node C.mjs hook')], toPatches(m));
+  assert.match(edited.conflicts[0]!, /ENTRY_MODIFIED/);
+  assert.equal(edited.patches[0]!.remove, undefined);
 });

@@ -28,9 +28,13 @@ function parse(text: string): { doc: Obj; hooks: Obj } | string {
 }
 
 /** Pure: text after adding the missing owned entries (identical entries are not duplicated). */
-export function addEntries(text: string, adds: Patch['add']): string {
+export function addEntries(text: string, adds: Patch['add'], remove: Patch['add'] = []): string {
   const p = parse(text);
   if (typeof p === 'string') throw new Error(p);
+  for (const r of remove) {
+    const kept = ((p.hooks[r.event] as unknown[] | undefined) ?? []).filter(e => !isDeepStrictEqual(e, r.entry));
+    if (kept.length) p.hooks[r.event] = kept; else delete p.hooks[r.event];
+  }
   for (const a of adds) {
     const arr = (p.hooks[a.event] ??= []) as unknown[];
     if (!arr.some(e => isDeepStrictEqual(e, a.entry))) arr.push(a.entry);
@@ -38,23 +42,34 @@ export function addEntries(text: string, adds: Patch['add']): string {
   return dump({ ...p.doc, hooks: p.hooks });
 }
 
-/** files: path -> current text ('' = missing). entries: patches whose `add` lists the owned entries per file. */
-export function planSetup(files: Record<string, string>, entries: Patch[]): SetupPlan {
-  const patches: Patch[] = [], conflicts: string[] = [];
-  for (const e of entries) {
-    const text = files[e.file] ?? '';
-    const p = parse(text);
-    if (typeof p === 'string') { conflicts.push(`${e.file}: ${p}`); continue; }
-    const add = e.add.filter(a => !((p.hooks[a.event] as unknown[] | undefined) ?? []).some(x => isDeepStrictEqual(x, a.entry)));
-    if (add.length) patches.push({ file: e.file, beforeHash: sha256(text), add });
-  }
-  return { patches, conflicts };
-}
+/** A patch may also carry `remove`: stale manifest-owned entries replaced in the same transaction. */
+export type PlanPatch = Patch & { remove?: Patch['add'] };
 
 const commandsOf = (entry: unknown): string[] =>
   isObj(entry) && Array.isArray(entry['hooks'])
     ? (entry['hooks'] as unknown[]).flatMap(h => (isObj(h) && typeof h['command'] === 'string' ? [h['command']] : []))
     : [];
+
+/** files: path -> current text ('' = missing). entries: patches whose `add` lists the owned entries per file.
+ *  manifest: previously recorded owned entries; one that is unchanged but differs from the new entry is replaced. */
+export function planSetup(files: Record<string, string>, entries: Patch[], manifest: Patch[] = []): { patches: PlanPatch[]; conflicts: string[] } {
+  const patches: PlanPatch[] = [], conflicts: string[] = [];
+  for (const e of entries) {
+    const text = files[e.file] ?? '';
+    const p = parse(text);
+    if (typeof p === 'string') { conflicts.push(`${e.file}: ${p}`); continue; }
+    const present = (ev: string) => (p.hooks[ev] as unknown[] | undefined) ?? [];
+    const add = e.add.filter(a => !present(a.event).some(x => isDeepStrictEqual(x, a.entry)));
+    const remove: Patch['add'] = [];
+    for (const m of manifest.filter(m => m.file === e.file).flatMap(m => m.add)) {
+      if (e.add.some(a => isDeepStrictEqual(a.entry, m.entry)) || !e.add.some(a => a.event === m.event)) continue;
+      if (present(m.event).some(x => isDeepStrictEqual(x, m.entry))) remove.push(m);
+      else if (present(m.event).some(x => commandsOf(x).some(c => commandsOf(m.entry).includes(c)))) conflicts.push(`${e.file}: ENTRY_MODIFIED ${m.event} ${m.ownedId}`);
+    }
+    if (add.length || remove.length) patches.push({ file: e.file, beforeHash: sha256(text), add, ...(remove.length ? { remove } : {}) });
+  }
+  return { patches, conflicts };
+}
 
 /** Pure: removes array entries deep-equal to an owned entry; edited owned entries stay and are reported. */
 export function uninstall(files: Record<string, string>, ownedPatches: Patch[]): UninstallResult {
