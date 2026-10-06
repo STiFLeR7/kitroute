@@ -12,6 +12,10 @@ This is a development preview.
 - The package declares Node >=24.21.0 <25. The local test used 24.11.0, so runtime support still needs resolution.
 - The package is marked private. It is not published to any registry.
 
+## Development storage
+
+Keep development artifacts inside this checkout. `npm test` uses `.local/tmp/` for temporary files and `.local/kitroute-data/` for development data. npm uses `.local/npm-cache/`. Store captures and local archives under `.local/artifacts/`, and create additional worktrees under `.worktrees/`. These directories are excluded from Git. Read [AGENTS.md](AGENTS.md) before running direct tests or live probes.
+
 ## Install from a local tarball
 
 Build and pack from a checkout of this repository:
