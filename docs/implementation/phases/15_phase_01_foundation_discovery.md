@@ -10,6 +10,18 @@ Tech Stack: Node.js 24.21.0 baseline, TypeScript, npm, Node tests, and the yaml 
 
 Spec: [Main plan](../12_implementation_plan.md), [contracts](../14_module_map_contracts.md), and [runtime ADR](../adrs/21_adr_001_runtime_package.md).
 
+## Execution status
+
+Branch feat/p01-foundation-discovery. Local evidence is Windows 11 (10.0.26200) with Node v24.11.0, below the 24.21.0 baseline. The baseline and Fedora are untested.
+
+| Task | State | Commit | Evidence |
+| --- | --- | --- | --- |
+| P01.T1 | Implemented and reviewed. CI workflow written but not run. Fedora not run. | eb7fae0 | npm test passes locally. |
+| P01.T2 | Implemented and reviewed. Codex config.toml per-skill disable is not read (deferred to P02.T2). | 842abbe | 16 discovery tests. |
+| P01.T3 | Source implemented and reviewed. Claude Code live entry passes on Windows. Codex live entry is blocked. Fedora not run. | 85ea0ef, 0a432c2 | [Evidence 29](../evidence/29_p01_host_feasibility.md) |
+
+M1 is not complete.
+
 ## Global constraints
 
 All constraints in the main plan apply. Test on Windows and Fedora Linux. Do not edit real host configuration during unit tests. No phase is complete from documentation alone.

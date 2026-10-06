@@ -10,6 +10,16 @@ Tech Stack: TypeScript evaluation scripts, JSON fixtures, Node tests, and pinned
 
 Spec: [Validation plan](../../delivery/09_validation_plan.md), [milestones](../13_milestones.md), and [release ADR](../adrs/27_adr_007_evaluation_release.md).
 
+## Execution status
+
+| Task | State | Commits |
+| --- | --- | --- |
+| P05.T1 | Harness, 28 cases (14 development, 14 held-out) and the offline Kitroute selection condition are done. Live agent conditions and pinning an existing router are NOT run: both need user authorization. | 19536c3 |
+| P05.T2 | decideRelease, compareAll and the tests are done. gates.json and the results report are NOT created, because no development-split live results exist yet. | 2392956 |
+| P05.T3 | The pilot guide and feedback template are done. No recruitment and no pilot summary. | a09d291 |
+
+Offline selection on the development split (selection success, not task success): 1.000 at catalog sizes 10, 50 and 200. The development cases were written to be solvable, so this validates the harness, not routing quality. The held-out split has not been run. M5 is not complete.
+
 ## Global constraints
 
 Compare native defaults, improved descriptions, relevant existing routers, and Kitroute. Complete a small developer pilot before release. Do not store real prompts or project code in basic history.

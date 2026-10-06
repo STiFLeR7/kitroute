@@ -34,6 +34,12 @@ Kitroute helps coding agents select and use relevant installed skills and tools 
 | [26 ADR 006: reversible setup](implementation/adrs/26_adr_006_reversible_setup.md) | Configuration ownership, backup, apply, conflict, and uninstall rules. |
 | [27 ADR 007: evaluation and release](implementation/adrs/27_adr_007_evaluation_release.md) | Comparative evidence, pilot, community release, and free local core. |
 | [28 Requirement traceability](implementation/28_requirement_traceability.md) | Coverage of all 14 selected choices and architecture requirements. |
+| [29 Host feasibility evidence](implementation/evidence/29_p01_host_feasibility.md) | Initial Windows host feasibility results and remaining system gaps. |
+| [30 Local routing evidence](implementation/evidence/30_p02_local_routing.md) | Database and local routing test results. |
+| [31 Hook smoke evidence](implementation/evidence/31_p03_hook_smoke.md) | Initial automatic host routing results. |
+| [32 Observation and history evidence](implementation/evidence/32_p03_observation_history.md) | Observed use, privacy, and retention results. |
+| [33 Installable preview evidence](implementation/evidence/33_p04_installable_preview.md) | Package and reversible setup results. |
+| [34 Codex Windows live test](implementation/evidence/34_codex_windows_live_testing.md) | Windows command correction and live Codex tests with ChatGPT sign-in. |
 
 ## Naming convention
 
@@ -45,7 +51,7 @@ Subdirectories group related documents: `research/`, `architecture/`, `integrati
 
 The shared local core, host-specific adapters, and optional MCP interface form the architecture baseline. All 14 guided choices are recorded in the decision log. These include TypeScript, execution on demand, SQLite, Windows and Fedora Linux, and a free local core.
 
-The 14-question round is closed. The implementation checklist tracks the broad work. The phase plans define exact tasks and tests. All six milestones remain not started. Design contracts and release targets do not claim completed implementation or tested compatibility.
+The 14-question round is closed. The implementation checklist tracks the broad work. The phase plans define exact tasks and tests. M1–M5 remain in progress, and M6 remains not started. The milestone register and evidence reports separate passing Windows tests from unrun Fedora tests and release gates.
 
 Research was collected on 5 October 2026. It remains a dated source snapshot. Use the decision log and current design documents for the selected direction.
 

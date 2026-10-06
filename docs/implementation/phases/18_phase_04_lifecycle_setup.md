@@ -10,6 +10,18 @@ Tech Stack: TypeScript, SQLite, platform-aware paths, and Node tests.
 
 Spec: [Contracts](../14_module_map_contracts.md), [routing ADR](../adrs/24_adr_004_selection_lifecycle.md), and [setup ADR](../adrs/26_adr_006_reversible_setup.md).
 
+## Execution status
+
+Windows 11 with Node v24.11.0 only. The real-host setup run awaits user authorization. Fedora has not been run. Codex live entry was deferred by the user.
+
+| Task | State | Commits |
+| --- | --- | --- |
+| P04.T1 | Implemented and reviewed. SessionStart reroutes only from a saved phase other than general. | 4d90ef4, f0f60d4 |
+| P04.T2 | Implemented and reviewed. Stale owned entries are replaced when setup runs again. planSetup accepts the manifest. | af7fd6f, 1638deb |
+| P04.T3 | Package and automated sequence pass on Windows. The manual real-host run has not been done. | ac94bcd |
+
+Evidence: [33](../evidence/33_p04_installable_preview.md). M4 is not complete.
+
 ## Global constraints
 
 Reconsider each user request and clear task changes. Avoid repeated guidance when selection is unchanged. One guided setup command must preserve unrelated configuration and later user edits.

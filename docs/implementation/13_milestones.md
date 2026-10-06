@@ -6,11 +6,11 @@ Status: planned. A milestone is complete only when its evidence is recorded and 
 
 | ID | Milestone | Depends on | Exit evidence | State |
 | --- | --- | --- | --- | --- |
-| M1 | Integration feasibility | Planning review | Runtime/build tests; synthetic hook round trips; live host entry/discovery report on Windows and Fedora. | Not started |
-| M2 | Local routing | M1 | Database migration/reopen/concurrency tests; eligibility, abstention, scope, ranking, and three-capability tests. | Not started |
-| M3 | Automatic host routing | M2 | Ordinary requests invoke routing; supported hook output; observed-use classification; 30-day privacy and retention tests. | Not started |
-| M4 | Installable preview | M3 | Task-change tests; setup preview/apply/repeat/uninstall tests; manual host smoke tests on both systems. | Not started |
-| M5 | Evaluated candidate | M4 | Pinned comparative trials; calibrated release gates; completed developer pilot; documented decision. | Not started |
+| M1 | Integration feasibility | Planning review | Runtime/build tests; synthetic hook round trips; live host entry/discovery report on Windows and Fedora. | In progress: Codex live entry passed on Windows with native hook review; Fedora and the declared Node runtime remain unresolved. See [evidence 29](evidence/29_p01_host_feasibility.md) and [34](evidence/34_codex_windows_live_testing.md). |
+| M2 | Local routing | M1 | Database migration/reopen/concurrency tests; eligibility, abstention, scope, ranking, and three-capability tests. | In progress: tests pass on Windows; Fedora not run; see [evidence 30](evidence/30_p02_local_routing.md). |
+| M3 | Automatic host routing | M2 | Ordinary requests invoke routing; supported hook output; observed-use classification; 30-day privacy and retention tests. | In progress: Claude Code routing and observation pass on Windows; Codex automatic guidance passed a live Windows smoke test. Codex skill-loading observation stays unknown. Fedora remains unrun. See [evidence 31](evidence/31_p03_hook_smoke.md), [32](evidence/32_p03_observation_history.md), and [34](evidence/34_codex_windows_live_testing.md). |
+| M4 | Installable preview | M3 | Task-change tests; setup preview/apply/repeat/uninstall tests; manual host smoke tests on both systems. | In progress: automated package and lifecycle tests pass on Windows. Generated Codex hooks passed live setup and uninstall tests in an isolated home. Fedora remains unrun. See [evidence 33](evidence/33_p04_installable_preview.md) and [34](evidence/34_codex_windows_live_testing.md). |
+| M5 | Evaluated candidate | M4 | Pinned comparative trials; calibrated release gates; completed developer pilot; documented decision. | In progress: the harness, 28 synthetic cases, gate logic and pilot guide exist. Live comparisons, gates.json, held-out runs and the developer pilot are not done, because they need user authorization for cost and recruitment. |
 | M6 | Community release | M5 | Clean installation on both systems; support docs; explicit license; package-name rights; authorized publication and public-package smoke tests. | Not started |
 
 M6 does not require official directory acceptance. Other Linux distributions and macOS remain outside the first support claim until tested.

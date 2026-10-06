@@ -1,0 +1,8 @@
+{
+  "session_id": "synthetic-session-2",
+  "turn_id": "synthetic-turn-1",
+  "cwd": "C:\\synthetic\\project",
+  "hook_event_name": "UserPromptSubmit",
+  "permission_mode": "default",
+  "prompt": "Fix checkout"
+}

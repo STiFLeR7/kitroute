@@ -10,6 +10,18 @@ Tech Stack: TypeScript, Node child processes, SQLite, and Node tests.
 
 Spec: [Contracts](../14_module_map_contracts.md), [adapter ADR](../adrs/23_adr_003_host_adapters.md), and [history ADR](../adrs/25_adr_005_history_privacy.md).
 
+## Execution status
+
+Windows 11 with Node v24.11.0 only. Codex live entry was deferred by the user. Fedora has not been run.
+
+| Task | State | Commits |
+| --- | --- | --- |
+| P03.T1 | Implemented and reviewed. The live Claude Code hook passes on Windows. | 861a199, b7469d7 |
+| P03.T2 | Implemented and reviewed | bc4a5a2 |
+| P03.T3 | Implemented and reviewed. AdapterInput gains an optional eventId. The history command and worker records were added here by ruling. | f16aa01, 59fc703 |
+
+Evidence: [31](../evidence/31_p03_hook_smoke.md), [32](../evidence/32_p03_observation_history.md). M3 is not complete.
+
 ## Global constraints
 
 Hook failure returns control to the host. Native trust and consent remain intact. Save basic records for 30 days without user prompts or project code. Unknown observation stays unknown.

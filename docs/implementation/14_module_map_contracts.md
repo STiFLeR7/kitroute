@@ -83,12 +83,14 @@ export interface AdapterInput {
   inventoryRevision?: string;
   sessionId: string;
   turnId?: string;
+  eventId?: string;
   text?: string;
   toolName?: string;
   skillTarget?: string;
   nativeLoadTarget?: string;
   observedToolAvailable?: string;
   succeeded?: boolean;
+  sessionSource?: 'startup' | 'resume' | 'clear' | 'compact';
 }
 
 export interface DiscoveryContext {
@@ -178,7 +180,7 @@ export interface UninstallResult {
 | projectScopeId(normalizedRoot: string, profileId: string): string | Hash a length-delimited root/profile tuple. Use the result as projectId in every core record and database key. |
 | parseSkill(text: string, source: string, host: Host, projectId: string): Capability | Parse frontmatter and enforce invocation policy without treating malformed metadata as implicit permission. |
 | openStore(path: string): Store | Open and migrate SQLite with a bounded lock timeout. |
-| replaceInventory(store: Store, context: DiscoveryContext, items: Capability[]): void | Replace only the host/project scope after discovery completes. |
+| replaceInventory(store: Store, context: DiscoveryContext, items: Capability[], revision?: string): void | Replace only the host/project scope after discovery completes. Commit an optional source revision in the same transaction. |
 | listInventory(store: Store, host: Host, projectId: string): Capability[] | Return the current scope without borrowing another project's capabilities. |
 | ensureInventory(store: Store, adapter: Adapter, context: DiscoveryContext, revision: string): Promise<Capability[]> | Discover on first use or source revision change, replace atomically, and otherwise reuse metadata. |
 | currentAvailability(cached: Capability[], fresh: Capability[] \| undefined): Capability[] | Reset cached tools to unknown. Merge only current host/project inventory supplied for this request. |
@@ -190,7 +192,7 @@ export interface UninstallResult {
 | runWorker(workerPath: string, host: Host, event: string, input: string, validateOutput: (raw: string) => string \| null, deadlineMs?: number): Promise<string> | Bound the isolated worker, drain stderr, and return only adapter-validated output. |
 | advanceState(previous: SessionState, input: AdapterInput, ids: string[]): SessionState | Update phase and deduplication signature without storing prompt text. |
 | detectHosts(homeRoot: string): Promise<Host[]> | Detect supported installations without installing agents or rewriting their configuration. |
-| planSetup(files: Record<string, string>, entries: Patch[]): SetupPlan | Preview exact owned entries and report malformed/conflicting configuration. |
+| planSetup(files: Record<string, string>, entries: Patch[], manifest?: ManifestEntry[]): SetupPlan | Preview exact owned entries and report malformed/conflicting configuration. When the manifest is supplied, plan the removal of stale owned entries that are unchanged. |
 | applySetup(plan: SetupPlan, root: string): void | Recheck file hashes, back up, and atomically apply owned entries. |
 | uninstall(files: Record<string, string>, ownedPatches: Patch[]): UninstallResult | Remove exact owned entries and report conflicts while preserving user-modified entries. |
 

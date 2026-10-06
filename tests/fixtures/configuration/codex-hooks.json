@@ -1,0 +1,11 @@
+{
+  "description": "synthetic Codex hooks fixture",
+  "hooks": {
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "echo user-codex-hook" }] }
+    ],
+    "PostToolUse": [
+      { "matcher": "^Bash$", "hooks": [{ "type": "command", "command": "echo after-bash", "timeout": 30 }] }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "kitroute",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "bin/",
+    "dist/src/",
+    "README.md"
+  ],
+  "bin": {
+    "kitroute": "bin/kitroute.mjs"
+  },
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node scripts/run-tests.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.1",
+    "typescript": "7.0.2"
+  },
+  "dependencies": {
+    "yaml": "2.9.1"
+  }
+}
