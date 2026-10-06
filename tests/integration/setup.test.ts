@@ -130,12 +130,26 @@ test('user edits after install survive uninstall; Codex-format fixture', () => {
 });
 
 test('buildCommand quotes paths with spaces and refuses shell metacharacters', () => {
-  const c = buildCommand('C:\\Program Files\\node\\node.exe', 'D:\\my kit\\bin\\kitroute.mjs', 'codex', 'PostToolUse');
+  const c = buildCommand('C:\\Program Files\\node\\node.exe', 'D:\\my kit\\bin\\kitroute.mjs', 'codex', 'PostToolUse', 'linux');
   assert.equal(c, '"C:/Program Files/node/node.exe" "D:/my kit/bin/kitroute.mjs" hook --host codex --event PostToolUse');
+  assert.equal(buildCommand('/node', '/kit/bin.mjs', 'claude-code', 'UserPromptSubmit', 'win32'), '"/node" "/kit/bin.mjs" hook --host claude-code --event UserPromptSubmit');
   for (const ch of ['"', '$', '`', '%', '!', '\n']) {
     assert.throws(() => buildCommand(`/a${ch}b/node`, '/k/bin.mjs', 'codex', 'X'), /UNSUPPORTED_PATH_CHARACTERS/);
     assert.throws(() => buildCommand('/n', `/k${ch}/bin.mjs`, 'codex', 'X'), /UNSUPPORTED_PATH_CHARACTERS/);
   }
+});
+
+test('Codex Windows command executes quoted paths in PowerShell and preserves hook input', { skip: process.platform !== 'win32' }, () => {
+  const script = join(dir(), 'hook with spaces.mjs');
+  writeFileSync(script, `let input = ''; for await (const chunk of process.stdin) input += chunk;
+process.stdout.write(JSON.stringify({ args: process.argv.slice(2), input: JSON.parse(input) }));`);
+  const command = buildCommand(process.execPath, script, 'codex', 'UserPromptSubmit');
+  const input = { session_id: 'synthetic-session', prompt: 'Synthetic checkout failure' };
+  const result = spawnSync('pwsh', ['-NoProfile', '-NonInteractive', '-Command', command], {
+    encoding: 'utf8', input: JSON.stringify(input)
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), { args: ['hook', '--host', 'codex', '--event', 'UserPromptSubmit'], input });
 });
 
 test('detection: neither, each alone, both, unsupported, unknown version', async () => {
@@ -195,8 +209,7 @@ test('CLI: no host means no changes; dry-run is immutable; setup and uninstall r
   assert.equal(claude.theme, 'dark');
   assert.deepEqual(Object.keys(claude.hooks).sort(), ['PostToolUse', 'PostToolUseFailure', 'SessionStart', 'UserPromptSubmit']);
   assert.equal(claude.hooks.PostToolUse[0].matcher, 'Skill');
-  if (process.platform === 'win32') assert.equal(existsSync(join(home, '.codex', 'hooks.json')), false); // Codex skipped on Windows
-  else assert.deepEqual(Object.keys(JSON.parse(readFileSync(join(home, '.codex', 'hooks.json'), 'utf8')).hooks).sort(), ['SessionStart', 'UserPromptSubmit']);
+  assert.deepEqual(Object.keys(JSON.parse(readFileSync(join(home, '.codex', 'hooks.json'), 'utf8')).hooks).sort(), ['SessionStart', 'UserPromptSubmit']);
   assert.equal(cli(home, 'setup').out.plan.patches.length, 0);
 
   claude.theme = 'light';
@@ -276,14 +289,14 @@ test('setup registers Codex UserPromptSubmit and SessionStart only (no PostToolU
   });
 });
 
-test('setup on win32 skips Codex with a host note and still enables Claude Code', async () => {
+test('setup on win32 registers executable Codex hooks and still enables Claude Code', async () => {
   await withHome(async home => {
     const out = JSON.parse(await setupCommand([], 'win32'));
-    assert.equal(existsSync(join(home, '.codex', 'hooks.json')), false);
+    const hooks = JSON.parse(readFileSync(join(home, '.codex', 'hooks.json'), 'utf8')).hooks;
+    assert.deepEqual(Object.keys(hooks).sort(), ['SessionStart', 'UserPromptSubmit']);
+    assert.match(hooks.UserPromptSubmit[0].hooks[0].command, /^& "/);
     assert.ok(existsSync(join(home, '.claude', 'settings.json')));
-    const note = out.hosts.find((h: { host: string }) => h.host === 'codex').note;
-    assert.match(note, /UNVERIFIED_WINDOWS_HOOK_SHELL/);
-    assert.ok(out.plan.patches.every((p: { file: string }) => !p.file.includes('.codex')));
+    assert.ok(out.plan.patches.some((p: { file: string }) => p.file.includes('.codex')));
   });
 });
 

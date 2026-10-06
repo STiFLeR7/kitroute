@@ -7,11 +7,12 @@ const isObj = (v: unknown): v is Obj => !!v && typeof v === 'object' && !Array.i
 export const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
 const dump = (o: unknown) => `${JSON.stringify(o, null, 2)}\n`;
 
-/** `"<node>" "<bin>" hook --host <h> --event <E>`; refuses (never escapes) paths with shell metacharacters. */
-export function buildCommand(node: string, bin: string, host: Host, event: string): string {
+/** Codex uses PowerShell on Windows. Refuse paths with shell metacharacters. */
+export function buildCommand(node: string, bin: string, host: Host, event: string, platform: string = process.platform): string {
   const [n, b] = [node, bin].map(p => p.replaceAll('\\', '/'));
   if ([n, b].some(p => /["$`%!\n\r]/.test(p!))) throw new Error('UNSUPPORTED_PATH_CHARACTERS');
-  return `"${n}" "${b}" hook --host ${host} --event ${event}`;
+  const invoke = host === 'codex' && platform === 'win32' ? '& ' : '';
+  return `${invoke}"${n}" "${b}" hook --host ${host} --event ${event}`;
 }
 
 /** Parse a config file; '' means missing. Returns the object or a conflict code. */
