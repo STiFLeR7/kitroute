@@ -1,5 +1,7 @@
 # P04 installable preview evidence
 
+Follow-up, 6 October 2026: [evidence 34](34_codex_windows_live_testing.md) records passing generated Codex hooks and uninstall in an isolated Windows home. The earlier results below remain a historical record. Fedora remains unrun, so M4 stays in progress.
+
 Task: P04.T3. Branch feat/p01-foundation-discovery. Commit: "test: prove installable preview on target systems" (see git log; hash recorded in the SDD report).
 
 ## Environment

@@ -1,5 +1,7 @@
 # P01.T3 host feasibility evidence
 
+Follow-up, 6 October 2026: [evidence 34](34_codex_windows_live_testing.md) records passing live Codex entry on Windows after a command fix. The earlier results below remain a historical record. Fedora and the declared Node runtime remain unresolved.
+
 Tasks: P01.T3 (host feasibility and normalized input). Base commit: 842abbe (branch feat/p01-foundation-discovery); adapters committed in the commit that adds this file.
 
 ## Environment

@@ -1,5 +1,7 @@
 # P03.T1 hook smoke evidence
 
+Follow-up, 6 October 2026: [evidence 34](34_codex_windows_live_testing.md) records passing Windows Codex routing, repeated-request handling, and policy tests. Codex skill-loading observation remains unknown. The earlier results below remain a historical record.
+
 ## Environment
 - node v24.11.0; Claude Code 2.1.289; Windows 11 (10.0.26200). Model ID not recorded (host default).
 - Settings `env` entry used to set KITROUTE_HOME to a temp dir (supported by Claude Code settings).

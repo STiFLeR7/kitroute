@@ -8,7 +8,8 @@ This is a development preview.
 
 - Tested only on Windows 11 with Node 24.11.0.
 - Not tested on Fedora.
-- The Codex hook entry is not verified against a live Codex session.
+- Codex CLI 0.157.1 passed a live Windows smoke test with ChatGPT sign-in. See [the test report](docs/implementation/evidence/34_codex_windows_live_testing.md).
+- The package declares Node >=24.21.0 <25. The local test used 24.11.0, so runtime support still needs resolution.
 - The package is marked private. It is not published to any registry.
 
 ## Install from a local tarball
@@ -37,7 +38,7 @@ Shows what setup would add to your host configuration. It writes nothing.
 
 ### kitroute setup
 
-Adds Kitroute hook entries to `~/.claude/settings.json` and `~/.codex/hooks.json`, for each host that is present and supported. On Windows, setup currently skips Codex, because the hook command form has not yet been proven in a live Codex session there. It keeps your other settings. It records what it added in a manifest in the Kitroute data folder, and saves a backup there. Run `setup --dry-run` first and read the result.
+Adds Kitroute hook entries to `~/.claude/settings.json` and `~/.codex/hooks.json`, for each host that is present and supported. On Windows, Codex commands use the PowerShell call operator, `&`. Setup keeps your other configuration. It records its entries in a manifest and saves a backup in the Kitroute data folder. Run `setup --dry-run` first and read the result.
 
 ### kitroute uninstall --dry-run
 
