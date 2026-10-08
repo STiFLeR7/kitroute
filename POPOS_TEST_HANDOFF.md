@@ -1,5 +1,7 @@
 # Pop!_OS testing handoff for Claude Code
 
+Superseded for new test runs by [POPOS_DEV_HANDOFF.md](POPOS_DEV_HANDOFF.md). This file records the instructions for the first Pop!_OS run on 8 October 2026.
+
 Date: 8 October 2026. Project: Kitroute.
 
 Pop!_OS replaces Fedora as the required Linux target by user decision on 8 October 2026. A Pop!_OS pass does not establish support for Fedora or every Linux distribution.

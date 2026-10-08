@@ -43,7 +43,7 @@ Kitroute helps coding agents select and use relevant installed skills and tools 
 | [35 Pop!_OS compatibility test](implementation/evidence/35_popos_compatibility_testing.md) | Pop!_OS build, setup, package, privacy, and live Claude Code and Codex results. |
 | [36 Pop!_OS live test login and operator steps](implementation/evidence/36_popos_live_test_login_and_operator_steps.md) | Why live tests needed operator action, and a login runbook for future runs. |
 
-Linux testing handoff: [Pop!_OS instructions for Claude Code](../POPOS_TEST_HANDOFF.md). Pop!_OS replaced Fedora on 8 October 2026 (D25). Earlier evidence reports retain their original Fedora references as historical records.
+Linux testing handoff: [Pop!_OS developer test guide](../POPOS_DEV_HANDOFF.md). The earlier [agent instructions](../POPOS_TEST_HANDOFF.md) record the first run. Pop!_OS replaced Fedora on 8 October 2026 (D25). Earlier evidence reports retain their original Fedora references as historical records.
 
 ## Naming convention
 
