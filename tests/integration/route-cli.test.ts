@@ -158,6 +158,29 @@ test('codex skill disabled in config.toml is never selected', () => {
   } finally { t.done(); }
 });
 
+test('claude skill hidden by skillOverrides is never selected', () => {
+  const t = env('claude-code');
+  try {
+    const p = t.project('proj', { alpha: 'Debug checkout', beta: 'Debug checkout', gamma: 'Debug checkout' });
+    const names = () => lines(JSON.parse(t.route(p, 'debug checkout').stdout).guidance).map(l => l.capability).sort();
+    const local = join(p, '.claude', 'settings.local.json');
+    const user = join(t.home, '.claude', 'settings.json');
+    mkdirSync(join(t.home, '.claude'), { recursive: true });
+    assert.deepEqual(names(), ['alpha', 'beta', 'gamma']);
+    // the /skills menu writes .claude/settings.local.json; name-only stays visible to the model
+    writeFileSync(local, JSON.stringify({ skillOverrides: { alpha: 'off', beta: 'user-invocable-only', gamma: 'name-only' } }));
+    assert.deepEqual(names(), ['gamma']);
+    writeFileSync(local, JSON.stringify({ skillOverrides: { alpha: 'off' } }));
+    writeFileSync(user, JSON.stringify({ skillOverrides: { gamma: 'off' } }));
+    assert.deepEqual(names(), ['beta']);
+    // project-local settings take precedence over user settings for the same skill
+    writeFileSync(local, JSON.stringify({ skillOverrides: { gamma: 'on' } }));
+    assert.deepEqual(names(), ['alpha', 'beta', 'gamma']);
+    writeFileSync(local, '{');
+    assert.deepEqual(names(), []);
+  } finally { t.done(); }
+});
+
 test('index output has no paths; request text never leaks', () => {
   const t = env();
   try {

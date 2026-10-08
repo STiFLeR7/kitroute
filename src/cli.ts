@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { Adapter, Host, Patch, Phase, RouteRequest, RouteResult, RoutingPolicy } from './contracts.js';
-import { claudeCode } from './adapters/claude-code.js';
+import { applyClaudeOverrides, claudeCode } from './adapters/claude-code.js';
 import { applyCodexConfig, codex } from './adapters/codex.js';
 import { skillRoots } from './discovery/skills.js';
 import { dataDir, normalizeProject, projectScopeId } from './paths.js';
@@ -49,12 +49,14 @@ export async function setup(host: Host, project: string) {
   const projectId = projectScopeId(root, 'default'); // default profile is a recorded ruling
   const home = homedir();
   const roots = skillRoots(host, root, home);
+  // Claude files are in settings precedence order, lowest first; /skills writes skillOverrides to settings.local.json.
   const configFiles = host === 'codex'
     ? [join(home, '.codex', 'config.toml')]
-    : [join(home, '.claude', 'settings.json'), join(root, '.claude', 'settings.json')];
-  const configText = host === 'codex' ? await readFile(configFiles[0]!, 'utf8').catch(() => null) : null;
-  const adapter: Adapter = host === 'claude-code' ? claudeCode
-    : { ...codex, discover: async ctx => applyCodexConfig(await codex.discover(ctx), configText) };
+    : [join(home, '.claude', 'settings.json'), join(root, '.claude', 'settings.json'), join(root, '.claude', 'settings.local.json')];
+  const configTexts = await Promise.all(configFiles.map(f => readFile(f, 'utf8').catch(() => null)));
+  const adapter: Adapter = host === 'claude-code'
+    ? { ...claudeCode, discover: async ctx => applyClaudeOverrides(await claudeCode.discover(ctx), configTexts) }
+    : { ...codex, discover: async ctx => applyCodexConfig(await codex.discover(ctx), configTexts[0]!) };
   return { root, projectId, roots, configFiles, adapter, context: { host, projectId, roots } };
 }
 
