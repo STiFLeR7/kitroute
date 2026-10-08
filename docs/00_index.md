@@ -43,6 +43,8 @@ Kitroute helps coding agents select and use relevant installed skills and tools 
 | [35 Pop!_OS compatibility test](implementation/evidence/35_popos_compatibility_testing.md) | Pop!_OS build, setup, package, privacy, and live Claude Code and Codex results. |
 | [36 Pop!_OS live test login and operator steps](implementation/evidence/36_popos_live_test_login_and_operator_steps.md) | Why live tests needed operator action, and a login runbook for future runs. |
 
+Linux testing handoff: [Pop!_OS instructions for Claude Code](../POPOS_TEST_HANDOFF.md). Pop!_OS replaced Fedora on 8 October 2026 (D25). Earlier evidence reports retain their original Fedora references as historical records.
+
 ## Naming convention
 
 Use `NN_descriptive_name.md`, with a two-digit number, an underscore, and lowercase snake_case. Numbers are unique across the entire `docs/` tree and define reading order; they do not restart within subdirectories. Add the next unused number when adding a document, and update this index. Keep existing filenames stable once referenced.
@@ -51,7 +53,7 @@ Subdirectories group related documents: `research/`, `architecture/`, `integrati
 
 ## Document status
 
-The shared local core, host-specific adapters, and optional MCP interface form the architecture baseline. All 14 guided choices are recorded in the decision log. These include TypeScript, execution on demand, SQLite, Windows and Fedora Linux, and a free local core.
+The shared local core, host-specific adapters, and optional MCP interface form the architecture baseline. All 14 guided choices are recorded in the decision log. These include TypeScript, execution on demand, SQLite, Windows and Pop!_OS Linux, and a free local core.
 
 The 14-question round is closed. The implementation checklist tracks the broad work. The phase plans define exact tasks and tests. M1–M5 remain in progress, and M6 remains not started. Pop!_OS replaced Fedora as the required Linux target on 8 October 2026. The milestone register and evidence reports separate passing Windows and Pop!_OS tests from the open Windows runtime gate and the release gates.
 

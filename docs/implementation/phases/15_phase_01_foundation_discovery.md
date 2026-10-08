@@ -10,6 +10,8 @@ Tech Stack: Node.js 24.21.0 baseline, TypeScript, npm, Node tests, and the yaml 
 
 Spec: [Main plan](../12_implementation_plan.md), [contracts](../14_module_map_contracts.md), and [runtime ADR](../adrs/21_adr_001_runtime_package.md).
 
+Target update, 8 October 2026: Pop!_OS replaces Fedora for the required Linux checks. The execution status below is historical; use the [milestone register](../13_milestones.md) for current status.
+
 ## Execution status
 
 Branch feat/p01-foundation-discovery. Local evidence is Windows 11 (10.0.26200) with Node v24.11.0, below the 24.21.0 baseline. The baseline and Fedora are untested.
@@ -24,7 +26,7 @@ M1 is not complete.
 
 ## Global constraints
 
-All constraints in the main plan apply. Test on Windows and Fedora Linux. Do not edit real host configuration during unit tests. No phase is complete from documentation alone.
+All constraints in the main plan apply. Test on Windows and Pop!_OS Linux. Do not edit real host configuration during unit tests. No phase is complete from documentation alone.
 
 ## Review focus
 
@@ -137,7 +139,7 @@ if (result.error) throw new Error('TEST_RUNNER_FAILED');
 process.exitCode = result.status ?? 1;
 ```
 
-- [ ] Run npm test on both systems. Add CI jobs for Windows and Linux; Fedora manual evidence is required separately.
+- [ ] Run npm test on both systems. Add CI jobs for Windows and Linux; Pop!_OS manual evidence is required separately.
 - [ ] Commit the reviewed scaffold with the message feat: add local executable and test harness.
 
 ## Task P01.T2: Safe scoped skill discovery

@@ -23,7 +23,7 @@ A host feature being documented does not establish Kitroute compatibility. Pin a
 | Pi | Extension uses `before_agent_start` and related context/tool events. | Native skill selection may miss matches; keep explicit-only policy and distinguish file reads from activation evidence. | Later candidate |
 | Amp | Plugin `agent.start` supplies additional message context; native skills can include MCP configuration. | Tool events support observation. Skill-contained tool bundles affect when tools become available. | Later candidate |
 
-Claude Code and Codex are the initial implementation targets on Windows and Fedora Linux. Other hosts are later candidates or technical comparisons. This plan does not claim market-share measurements or tested support.
+Claude Code and Codex are the initial implementation targets on Windows and Pop!_OS Linux. Other hosts are later candidates or technical comparisons. This plan does not claim market-share measurements or tested support.
 
 ## Claude Code and Codex spike
 
@@ -43,7 +43,7 @@ Launch through a public community repository and installable package first. Deve
 
 Agent packages can share a core release while containing different hook configuration and adapter code. Provide one guided setup command that detects supported agents, shows planned changes, backs up affected settings, and adds Kitroute. Use supported native installation paths where appropriate. Implement command names and merge mechanisms through the [delivery checklist](../delivery/11_implementation_checklist.md).
 
-Preserve unrelated host configuration during setup. Track Kitroute-owned entries so uninstall removes only those entries. Do not restore an entire backup over settings changed after installation. Test repeated setup, conflicting entries, partial failure, and uninstall on Windows and Fedora Linux.
+Preserve unrelated host configuration during setup. Track Kitroute-owned entries so uninstall removes only those entries. Do not restore an entire backup over settings changed after installation. Test repeated setup, conflicting entries, partial failure, and uninstall on Windows and Pop!_OS Linux.
 
 Codex local/community packaging and official public-directory submission are separate. The reviewed submission rules exclude lifecycle-hook ZIPs, so directory eligibility must be rechecked before release.
 

@@ -167,7 +167,7 @@ Interfaces: voluntary feedback records environment, workflow category, helpfulne
 
 ```json
 {
-  "platform": "fedora",
+  "platform": "popos",
   "host": "codex",
   "workflow": "debugging",
   "helpful": true,

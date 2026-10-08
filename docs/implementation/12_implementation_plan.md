@@ -19,7 +19,7 @@ A phase groups related tasks. A milestone records a working outcome with test ev
 - Use TypeScript for the shared core and supported adapter code.
 - Start when needed for each routing request. Reuse a saved local index. No background service is required for the first release.
 - Use SQLite for the capability index and basic usage records.
-- Target Windows and Fedora Linux together. Publish exact tested OS and agent versions.
+- Target Windows and Pop!_OS Linux together. Publish exact tested OS and agent versions.
 - Select at most three capabilities per decision, counting skills and tools together. Fewer or none are valid. Keep guidance short.
 - Reconsider on each user request and clear task changes. Avoid repeated guidance when selection is unchanged.
 - Keep basic local records for 30 days. Save capability names, observed use, result status, and timing. Exclude prompts and project code by default.

@@ -10,7 +10,7 @@ Validate both technical integration and useful task completion. A router can inc
 
 For each adapter, record host version, model, operating system, execution mode, skill locations, plugin state, and tool connections. Check automatic entry, context injection or native attachment, explicit-only policy, observation coverage, timeout recovery, session resume, and compaction where supported.
 
-The initial compatibility targets are Windows and Fedora Linux. Test both environments before claiming first-release support. Record exact OS and agent versions; Fedora results do not establish compatibility with every Linux distribution.
+The initial compatibility targets are Windows and Pop!_OS Linux. Test both environments before claiming first-release support. Record exact OS and agent versions; Pop!_OS results do not establish compatibility with every Linux distribution.
 
 Test Windows paths and executable discovery for declared Windows support. CLI results must not be reused as evidence for cloud-agent or other runtime modes.
 

@@ -1,12 +1,12 @@
 # ADR-001: TypeScript runtime and package boundary
 
-Date: 5 October 2026.
+Date: 5 October 2026. Amended 8 October 2026: Pop!_OS replaces Fedora as the Linux target under D25; the runtime and setup decisions are unchanged.
 
 Status: TypeScript is established by D12. Node.js and package details are the engineering baseline for P01, subject to cross-platform tests.
 
 ## Context
 
-Kitroute starts on demand and integrates with more than one host. A small package reduces setup differences between the shared core and adapters. The runtime must work on Windows and Fedora Linux.
+Kitroute starts on demand and integrates with more than one host. A small package reduces setup differences between the shared core and adapters. The runtime must work on Windows and Pop!_OS Linux.
 
 ## Decision
 

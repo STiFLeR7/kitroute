@@ -11,7 +11,7 @@ Status: coverage map for implementation. Tests and milestone reports are planned
 | Q3: SQLite | P02.T1 | Reopen, migration, rollback, scope, and contention tests. | [002](adrs/22_adr_002_sqlite_storage.md) |
 | Q4: Agent-first discovery | P01.T2, P01.T3, P02.T2 | Source precedence and unknown disconnected-tool tests. | [003](adrs/23_adr_003_host_adapters.md) |
 | Q5: Observed-use evidence | P03.T2, P03.T3 | Guidance/read/statement exclusions and native-event mappings. | [005](adrs/25_adr_005_history_privacy.md) |
-| Q6: Windows and Fedora | P01.T3, P04.T3, P06.T1 | Exact-version reports from both target systems. | [001](adrs/21_adr_001_runtime_package.md) |
+| Q6: Windows and Pop!_OS | P01.T3, P04.T3, P06.T1 | Exact-version reports from both target systems. | [001](adrs/21_adr_001_runtime_package.md) |
 | Q7: Three-capability maximum | P02.T2, P02.T3 | Combined skill/tool cap and valid abstention tests. | [004](adrs/24_adr_004_selection_lifecycle.md) |
 | Q8: Requests and task changes | P04.T1 | Phase transitions, unchanged guidance, resume, and project changes. | [004](adrs/24_adr_004_selection_lifecycle.md) |
 | Q9: Basic 30-day history | P03.T2 | Secret-marker exclusions, boundary deletion, and index preservation. | [005](adrs/25_adr_005_history_privacy.md) |

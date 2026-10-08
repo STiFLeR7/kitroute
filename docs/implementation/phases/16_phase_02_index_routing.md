@@ -10,6 +10,8 @@ Tech Stack: TypeScript, the runtime chosen in P01, SQLite behind Store, and Node
 
 Spec: [Contracts](../14_module_map_contracts.md), [storage ADR](../adrs/22_adr_002_sqlite_storage.md), and [routing ADR](../adrs/24_adr_004_selection_lifecycle.md).
 
+Target update, 8 October 2026: Pop!_OS replaces Fedora for the required Linux checks. The execution status below is historical; use the [milestone register](../13_milestones.md) for current status.
+
 ## Execution status
 
 Windows 11 with Node v24.11.0 only. Fedora has not been run. M1 is open: the user deferred Codex live entry and Fedora.

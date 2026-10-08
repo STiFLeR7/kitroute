@@ -12,7 +12,7 @@ The [implementation plan](../implementation/12_implementation_plan.md) defines s
 
 ## Core and storage
 
-- [ ] Prove and pin the Node baseline from ADR 001 on Windows and Fedora Linux.
+- [ ] Prove and pin the Node baseline from ADR 001 on Windows and Pop!_OS Linux.
 - [ ] Prove the SQLite binding from ADR 002 and implement capability, index revision, and usage tables.
 - [ ] Implement execution on demand with reuse of the saved local index.
 - [ ] Handle concurrent requests and bounded database retries without requiring a background service.
@@ -32,7 +32,7 @@ The [implementation plan](../implementation/12_implementation_plan.md) defines s
 - [ ] Reconsider selection on each user request and observable clear task changes.
 - [ ] Avoid repeated guidance when selections do not change.
 - [ ] Test session resume, compaction, interruptions, and changing project scope where supported.
-- [ ] Record exact Windows, Fedora, host, and model versions used in compatibility tests.
+- [ ] Record exact Windows, Pop!_OS, host, and model versions used in compatibility tests.
 
 ## Usage history
 

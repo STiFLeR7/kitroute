@@ -10,6 +10,8 @@ Tech Stack: TypeScript, SQLite, platform-aware paths, and Node tests.
 
 Spec: [Contracts](../14_module_map_contracts.md), [routing ADR](../adrs/24_adr_004_selection_lifecycle.md), and [setup ADR](../adrs/26_adr_006_reversible_setup.md).
 
+Target update, 8 October 2026: Pop!_OS replaces Fedora for the required Linux checks. The execution status below is historical; use the [milestone register](../13_milestones.md) for current status.
+
 ## Execution status
 
 Windows 11 with Node v24.11.0 only. The real-host setup run awaits user authorization. Fedora has not been run. Codex live entry was deferred by the user.
@@ -111,7 +113,7 @@ This test uses a synthetic Claude-shaped hook container. Add a separate fixture 
 - [ ] Use parsed object structure to preserve unrelated keys. Reject unsupported or ambiguous configuration formats rather than rewriting them destructively.
 - [ ] On uninstall, remove exact manifest-owned entries. If an owned entry was edited by the user, report the conflict and leave it intact.
 - [ ] Generate shell-specific hook commands from absolute runtime and entry paths. Test spaces and metacharacters. Do not use JSON encoding as shell escaping.
-- [ ] Run setup tests on Windows and Fedora. Commit with feat: add reversible guided setup.
+- [ ] Run setup tests on Windows and Pop!_OS. Commit with feat: add reversible guided setup.
 
 ## Task P04.T3: Preview package and lifecycle smoke tests
 
@@ -122,7 +124,7 @@ Interfaces: the setup, setup --dry-run, uninstall, and uninstall --dry-run comma
 - [ ] Write a child-process test that runs setup preview against a temporary home and confirms no file changes.
 - [ ] Package locally with npm pack and inspect its file list. Include compiled code and required metadata, not tests, evaluation results, user records, or local databases.
 - [ ] Install the tarball into a temporary prefix and run doctor, setup preview, apply, and uninstall against synthetic homes.
-- [ ] Run the same sequence manually in Windows and Fedora, then test real host prompts after intentional setup. Keep native hook trust review intact.
+- [ ] Run the same sequence manually in Windows and Pop!_OS, then test real host prompts after intentional setup. Keep native hook trust review intact.
 - [ ] Record M4 evidence and commit with test: prove installable preview on target systems.
 
 ## Milestone M4
