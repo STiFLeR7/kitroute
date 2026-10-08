@@ -2,6 +2,8 @@
 
 Tasks: P03.T1, P03.T2, P03.T3. Branch feat/p01-foundation-discovery. Commits 861a199, b7469d7 (T1); bc4a5a2 (T2); f16aa01, 59fc703 (T3).
 
+Follow-up, 8 October 2026: [evidence 35](35_popos_compatibility_testing.md) records Pop!_OS results. Pop!_OS replaced Fedora as the required Linux target. The Fedora references below remain a historical record.
+
 ## Environment
 - Windows 11 Home 10.0.26200, node v24.11.0, Claude Code 2.1.289. The model ID used for live runs was not recorded.
 - Codex live entry was deferred by the user. Fedora was not run.

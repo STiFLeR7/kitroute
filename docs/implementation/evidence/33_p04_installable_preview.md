@@ -2,6 +2,8 @@
 
 Follow-up, 6 October 2026: [evidence 34](34_codex_windows_live_testing.md) records passing generated Codex hooks and uninstall in an isolated Windows home. The earlier results below remain a historical record. Fedora remains unrun, so M4 stays in progress.
 
+Follow-up, 8 October 2026: [evidence 35](35_popos_compatibility_testing.md) records Pop!_OS results. Pop!_OS replaced Fedora as the required Linux target. The Fedora references below remain a historical record.
+
 Task: P04.T3. Branch feat/p01-foundation-discovery. Commit: "test: prove installable preview on target systems" (see git log; hash recorded in the SDD report).
 
 ## Environment

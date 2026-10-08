@@ -40,6 +40,8 @@ Kitroute helps coding agents select and use relevant installed skills and tools 
 | [32 Observation and history evidence](implementation/evidence/32_p03_observation_history.md) | Observed use, privacy, and retention results. |
 | [33 Installable preview evidence](implementation/evidence/33_p04_installable_preview.md) | Package and reversible setup results. |
 | [34 Codex Windows live test](implementation/evidence/34_codex_windows_live_testing.md) | Windows command correction and live Codex tests with ChatGPT sign-in. |
+| [35 Pop!_OS compatibility test](implementation/evidence/35_popos_compatibility_testing.md) | Pop!_OS build, setup, package, privacy, and live Claude Code and Codex results. |
+| [36 Pop!_OS live test login and operator steps](implementation/evidence/36_popos_live_test_login_and_operator_steps.md) | Why live tests needed operator action, and a login runbook for future runs. |
 
 ## Naming convention
 
@@ -51,7 +53,7 @@ Subdirectories group related documents: `research/`, `architecture/`, `integrati
 
 The shared local core, host-specific adapters, and optional MCP interface form the architecture baseline. All 14 guided choices are recorded in the decision log. These include TypeScript, execution on demand, SQLite, Windows and Fedora Linux, and a free local core.
 
-The 14-question round is closed. The implementation checklist tracks the broad work. The phase plans define exact tasks and tests. M1–M5 remain in progress, and M6 remains not started. The milestone register and evidence reports separate passing Windows tests from unrun Fedora tests and release gates.
+The 14-question round is closed. The implementation checklist tracks the broad work. The phase plans define exact tasks and tests. M1–M5 remain in progress, and M6 remains not started. Pop!_OS replaced Fedora as the required Linux target on 8 October 2026. The milestone register and evidence reports separate passing Windows and Pop!_OS tests from the open Windows runtime gate and the release gates.
 
 Research was collected on 5 October 2026. It remains a dated source snapshot. Use the decision log and current design documents for the selected direction.
 

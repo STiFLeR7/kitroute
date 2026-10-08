@@ -4,6 +4,8 @@ Follow-up, 6 October 2026: [evidence 34](34_codex_windows_live_testing.md) recor
 
 Tasks: P01.T3 (host feasibility and normalized input). Base commit: 842abbe (branch feat/p01-foundation-discovery); adapters committed in the commit that adds this file.
 
+Follow-up, 8 October 2026: [evidence 35](35_popos_compatibility_testing.md) records Pop!_OS results. Pop!_OS replaced Fedora as the required Linux target. The Fedora references below remain a historical record.
+
 ## Environment
 - node v24.11.0 (repo engines field asks >=24.21.0 <25; tests still pass)
 - Claude Code 2.1.289

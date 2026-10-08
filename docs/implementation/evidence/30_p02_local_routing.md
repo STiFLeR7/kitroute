@@ -2,6 +2,8 @@
 
 Tasks: P02.T0 (Codex per-skill disable, added by controller ruling), P02.T1, P02.T2, P02.T3. Branch feat/p01-foundation-discovery. Commits 19a34d9 (T1), 9d684d3 (T2), 61092c5 and 4fd7b2d (T0), 53f72cf and 1cf9230 (T3).
 
+Follow-up, 8 October 2026: [evidence 35](35_popos_compatibility_testing.md) records Pop!_OS results. Pop!_OS replaced Fedora as the required Linux target. The Fedora references below remain a historical record.
+
 ## Environment
 - Windows 11 Home 10.0.26200, node v24.11.0, npm 11.6.1. This is below the planned 24.21.0 baseline, which remains untested.
 - node:sqlite loads and prints an ExperimentalWarning on stderr.

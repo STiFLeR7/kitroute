@@ -4,6 +4,8 @@ Date: 6 October 2026. Tasks: P01 host entry, P03 automatic routing, and P04 setu
 Branch: `feat/p01-foundation-discovery`. Base commit: `7bf96ded31daeb1771aebd8a02a59e9827f1e9d8`.
 This report covers uncommitted changes after that commit.
 
+Follow-up, 8 October 2026: [evidence 35](35_popos_compatibility_testing.md) records Pop!_OS results. Pop!_OS replaced Fedora as the required Linux target. The Fedora references below remain a historical record.
+
 The Windows Codex smoke test passed after a command fix. This result closes the earlier Windows hook command gap.
 It does not complete the milestones for Fedora, runtime support, comparative evaluation, or the developer pilot.
 
