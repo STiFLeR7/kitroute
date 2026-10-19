@@ -11,7 +11,7 @@ Status: closed. All 14 guided product questions were answered on 5 October 2026.
 | 3 | Storage | Use SQLite for the capability index and basic usage records. |
 | 4 | Discovery | Use supported agent information first, with skill and configuration files as a fallback. Keep unknown availability explicit. |
 | 5 | Evidence of use | Report use only from observed native loading or tool calls. Keep suggestions, file reads, and agent statements separate. |
-| 6 | Operating systems | Target Windows and Fedora Linux together. Publish exact tested OS and agent versions. |
+| 6 | Operating systems | Target Windows and Pop!_OS Linux together. Publish exact tested OS and agent versions. |
 | 7 | Selection size | Select at most three capabilities per decision, counting skills and tools together. Fewer or none are valid. Keep guidance short. |
 | 8 | Selection timing | Reconsider on each user request and clear task changes. Avoid repeated guidance when selection is unchanged. |
 | 9 | Usage history | Keep basic local records for 30 days. Save capability names, observed use, result status, and timing. Exclude prompts and project code by default. |
@@ -20,6 +20,8 @@ Status: closed. All 14 guided product questions were answered on 5 October 2026.
 | 12 | Comparisons | Compare against native defaults, improved skill descriptions, and relevant existing routers. Manual naming is an additional reference. |
 | 13 | Release evidence | Complete repeatable comparative tests and a small developer pilot before the first release. Measure outcomes and collect real-project feedback. |
 | 14 | Business model | Keep local routing free. Consider paid extras after developers see value. Team settings and synchronization are later candidates. |
+
+Question 6 originally selected Fedora. On 8 October 2026, the user replaced it with Pop!_OS; see D25 in the decision log.
 
 ## Closure
 

@@ -1,9 +1,11 @@
-# Fedora testing handoff for Claude Code
+# Pop!_OS testing handoff for Claude Code
 
-Date: 6 October 2026. Project: Kitroute.
+Date: 8 October 2026. Project: Kitroute.
 
-Run the Fedora compatibility tests described here. Use the existing implementation and temporary host homes.
-Record actual results, fix confirmed Fedora defects, and leave a clear report for the Windows session.
+Pop!_OS replaces Fedora as the required Linux target by user decision on 8 October 2026. A Pop!_OS pass does not establish support for Fedora or every Linux distribution.
+
+Run the Pop!_OS compatibility tests described here. Use the existing implementation and temporary host homes.
+Record actual results, fix confirmed Pop!_OS defects, and leave a clear report for the Windows session.
 Do not claim release readiness from these tests alone.
 
 ## Current state
@@ -16,10 +18,11 @@ The latest reviewed commits are:
 
 - `e2c9f4b`: Adds the PowerShell call operator only for Codex on Windows.
 - `f2f1532`: Records the Windows Codex evidence and milestone updates.
-- Base branch: `feat/p01-foundation-discovery`.
+- `acb66ff`: Keeps development artifacts inside the repository.
+- The implementation was merged into `master` through PR #1 at `c3ef4f0`.
+- Use a checkout containing these commits and this Pop!_OS handoff update.
 
-The user requested a push of this branch after the handoff was written.
-Make sure that the Fedora checkout includes these commits and the later workspace storage changes.
+Make sure that the Pop!_OS checkout includes the reviewed implementation and workspace storage changes.
 Read `AGENTS.md`. Keep all artifacts, caches, temporary homes, and worktrees inside the checkout.
 
 Windows passed all 161 automated tests with no skips on Node `24.11.0`.
@@ -27,7 +30,7 @@ Codex CLI `0.157.1` passed six live checks with ChatGPT sign-in and model `gpt-6
 The live test used normal `/hooks` review. It did not bypass hook trust.
 Codex skill-loading observation remains unknown, although the synthetic skill body affected one reply.
 
-Fedora remains untested. The package requires Node `>=24.21.0 <25`, which differs from the Windows test runtime.
+Pop!_OS remains untested. The package requires Node `>=24.21.0 <25`, which differs from the Windows test runtime.
 The PowerShell regression test requires `pwsh` on Windows. Windows PowerShell `5.1` remains untested.
 Do not expand this task into those Windows shell tests.
 
@@ -43,7 +46,7 @@ Read these files in this checkout:
 - `docs/implementation/phases/17_phase_03_adapters_evidence.md`.
 - `docs/implementation/phases/18_phase_04_lifecycle_setup.md`.
 
-Read applicable `AGENTS.md` or `CLAUDE.md` instructions if they exist on Fedora.
+Read applicable `AGENTS.md` or `CLAUDE.md` instructions if they exist on Pop!_OS.
 Keep unrelated local edits. Do not reset or replace the checkout.
 Use the current branch unless the user asks for another branch.
 
@@ -62,9 +65,9 @@ Do not rerun passing paid model calls unless a relevant change requires them.
 
 ## 1. Confirm the checkout and environment
 
-Use a writable Fedora checkout of this repository. Record the filesystem actually tested.
+Use a writable Pop!_OS checkout of this repository. Record the filesystem actually tested.
 The Windows checkout path is `D:\kitroute`. Find its Linux location instead of assuming a mount path.
-Do not reuse Windows `node_modules` or compiled output as Fedora test evidence.
+Do not reuse Windows `node_modules` or compiled output as Pop!_OS test evidence.
 If you copy the checkout, preserve its commits and unrelated edits.
 
 From the repository root, run:
@@ -76,7 +79,8 @@ git branch --show-current
 git log -5 --oneline
 git merge-base --is-ancestor e2c9f4b HEAD
 git merge-base --is-ancestor f2f1532 HEAD
-cat /etc/fedora-release
+git merge-base --is-ancestor acb66ff HEAD
+cat /etc/os-release
 uname -srmo
 findmnt -T .
 node --version
@@ -86,10 +90,12 @@ command -v claude || true
 command -v codex || true
 ```
 
-If either commit is missing, obtain the correct local checkout before testing the fix.
-Make sure that the checkout uses the pushed feature branch, rather than assuming that `master` contains the implementation.
+If any required commit is missing, obtain the correct checkout before testing.
+Either the merged `master` or the feature branch can provide the implementation. Confirm that the checkout also includes this Pop!_OS handoff and the D25 target update.
 Record each command's exit status. Do not hide a failed prerequisite with `|| true`.
 The two optional executable searches above only collect availability information.
+
+Record the `ID`, `VERSION_ID`, and `PRETTY_NAME` from `/etc/os-release`. The live environment must identify as Pop!_OS; generic Linux CI or another distribution does not satisfy this target.
 
 Record installed host versions with `claude --version` and `codex --version` when available.
 The current detection floors are Claude Code `2.1.289` and Codex CLI `0.157.1`.
@@ -104,7 +110,7 @@ Do not mark the declared runtime gate complete from a run below its requirement.
 
 ## 2. Run a clean build and the full suite
 
-Run `npm ci` in the Fedora checkout. Do not use `npm install` to rewrite the lockfile.
+Run `npm ci` in the Pop!_OS checkout. Do not use `npm install` to rewrite the lockfile.
 Make sure that the resolved `dist` directory is inside this checkout before deleting its generated contents.
 Remove only that generated directory for the clean rebuild.
 
@@ -116,9 +122,9 @@ npm test
 
 Capture output and exit statuses under `.local/artifacts/`, which is excluded from Git.
 The test runner places temporary files under `.local/tmp/` and the npm cache under `.local/npm-cache/`.
-The current suite contains 161 tests. Fedora normally runs 160 and skips the Windows-only PowerShell command test.
+The current suite contains 161 tests. Pop!_OS normally runs 160 and skips the Windows-only PowerShell command test.
 Make sure that the skipped test is `Codex Windows command executes quoted paths in PowerShell and preserves hook input`.
-Do not install PowerShell on Fedora merely to remove that expected skip.
+Do not install PowerShell on Pop!_OS merely to remove that expected skip.
 
 The package installation test can skip when the npm registry is unreachable.
 Record that additional skip as a coverage gap. Resolve the network issue and rerun it when possible.
@@ -141,7 +147,7 @@ Run this Bash block from the repository root:
 KITROUTE_REPO="$(pwd -P)"
 KITROUTE_NODE="$(command -v node)"
 mkdir -p "$KITROUTE_REPO/.local/tmp" "$KITROUTE_REPO/.local/artifacts"
-KITROUTE_TEST_ROOT="$(mktemp -d "$KITROUTE_REPO/.local/tmp/kt-fedora.XXXXXX")"
+KITROUTE_TEST_ROOT="$(mktemp -d "$KITROUTE_REPO/.local/tmp/kt-popos.XXXXXX")"
 KITROUTE_TEST_HOME="$KITROUTE_TEST_ROOT/home"
 KITROUTE_TEST_PROJECT="$KITROUTE_TEST_ROOT/project with spaces"
 mkdir -p "$KITROUTE_TEST_HOME/.claude" "$KITROUTE_TEST_HOME/.codex"
@@ -212,11 +218,11 @@ Make sure that uninstall preview changes no bytes or modification times.
 Make sure that uninstall removes only exact owned entries and preserves later user edits.
 Make sure that the ownership manifest disappears when no owned entries remain.
 In a fresh case, edit an owned entry and make sure that uninstall reports a conflict and leaves it intact.
-The automated suite already covers this behavior. Record the relevant Fedora test result instead of inventing a manual pass.
+The automated suite already covers this behavior. Record the relevant Pop!_OS test result instead of inventing a manual pass.
 
 ## 5. Test live entry for both hosts
 
-Test Claude Code and Codex separately with their actual Fedora executables.
+Test Claude Code and Codex separately with their actual Pop!_OS executables.
 Use the temporary home, temporary project, and commands produced by setup.
 Consult the installed host's `--help` and official documentation before using version-specific launch flags.
 Do not launch the live target inside the Kitroute source checkout.
@@ -229,16 +235,16 @@ If authentication requires the user, finish independent checks and report the ex
 For Codex, complete normal `/hooks` review for the exact generated definitions.
 Do not use `--dangerously-bypass-hook-trust`, manually write trusted hashes, or disable native review.
 If a model is unavailable, choose an available model from the host's native catalog and record its exact ID.
-The Windows model ID is context, not a required Fedora model.
+The Windows model ID is context, not a required Pop!_OS model.
 
 Create a project skill for each host using these roots:
 
-- Claude Code: `<test-project>/.claude/skills/kt-fedora-smoke/SKILL.md`.
-- Codex: `<test-project>/.agents/skills/kt-fedora-smoke/SKILL.md`.
-- Skill metadata: `name: kt-fedora-smoke` and `description: Debug synthetic checkout failure`.
+- Claude Code: `<test-project>/.claude/skills/kt-popos-smoke/SKILL.md`.
+- Codex: `<test-project>/.agents/skills/kt-popos-smoke/SKILL.md`.
+- Skill metadata: `name: kt-popos-smoke` and `description: Debug synthetic checkout failure`.
 
 Use valid YAML frontmatter. Put a unique reply marker only in the skill body.
-For example, instruct the model to reply `KITROUTE_FEDORA_SKILL_BODY_7c42` and avoid file edits.
+For example, instruct the model to reply `KITROUTE_POPOS_SKILL_BODY_7c42` and avoid file edits.
 Do not include that marker in the model prompt, skill description, or routing context.
 
 Run these cases and record the actual hook events:
@@ -296,7 +302,7 @@ Make sure that an unchanged repeated selection adds no duplicate selection recor
 Inspect `usage` and `session_state` rows for the synthetic prompt and skill body marker. Neither must appear.
 Inventory descriptions are separate from basic history. Do not confuse their stored metadata with a prompt leak.
 
-Make sure that the Fedora package tests pass, including local packing and installation into a temporary prefix.
+Make sure that the Pop!_OS package tests pass, including local packing and installation into a temporary prefix.
 From the installed copy, run doctor, setup preview, setup, uninstall preview, and uninstall in a fresh temporary home.
 Make sure that generated commands point to the installed package, not the source checkout.
 Make sure that the tarball excludes tests, evidence captures, credentials, databases, and this handoff.
@@ -316,27 +322,27 @@ Make sure that the repository contains no credentials, databases, tarballs, or r
 Run `git diff --check` and inspect `git status --short`.
 Keep the original unpublished commits and any user edits intact.
 
-Write `docs/implementation/evidence/35_fedora_compatibility_testing.md` if `35` remains unused.
+Write `docs/implementation/evidence/35_popos_compatibility_testing.md` if `35` remains unused.
 Otherwise, use the next unused global document number and update `docs/00_index.md`.
 Keep raw synthetic logs under `.local/artifacts/`, outside Git. Add only a reviewed summary and useful sanitized excerpts.
 
 The evidence report must include:
 
-- Fedora release, filesystem, architecture, shell, Node, npm, host versions, model IDs, branch, and commit identity.
+- Pop!_OS release, filesystem, architecture, shell, Node, npm, host versions, model IDs, branch, and commit identity.
 - Commands, exit statuses, test counts, each skip reason, and any defect with its regression test.
 - Preview immutability, repeated setup, generated command execution, user-edit preservation, and uninstall results.
 - Live results for each host and case, trust handling, measured whole hook durations, and observation limits.
 - History privacy results, installed-package results, cleanup status, and each unrun or blocked check.
-- A separate decision for Fedora compatibility and for the unresolved Node runtime requirement.
+- A separate decision for Pop!_OS compatibility and for the unresolved Node runtime requirement.
 
 Update `README.md` and the milestone register only where this evidence supports a change.
-Keep previous Windows reports as historical evidence and link the Fedora follow-up.
+Keep previous reports as historical evidence, including their original Fedora references, and link the Pop!_OS follow-up. Fedora is no longer a required first-release gate.
 Do not mark M1, M3, or M4 complete until all of their exit requirements are satisfied.
 M5 still requires comparison trials and the developer pilot. M6 remains outside this task.
 
 Do not lower the Node floor without a supported decision.
 If the floor changes with user authorization, update `package.json`, ADR-001, and affected runtime documentation together.
-A Fedora pass on Node `24.21.0` still leaves Windows testing on that baseline open.
+A Pop!_OS pass on Node `24.21.0` still leaves Windows testing on that baseline open.
 
 Leave changes reviewable and uncommitted unless the user explicitly asks for a commit.
 Do not push. Finish with a short summary of passing checks, corrections, remaining gaps, and the evidence file path.

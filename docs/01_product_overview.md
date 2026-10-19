@@ -14,7 +14,7 @@ The developer makes an ordinary request, such as: “The checkout page sometimes
 
 The developer does not need to name Kitroute, a skill, or an MCP server on each turn after setup. Native permissions and consent remain part of the host's experience.
 
-The implementation uses TypeScript, starts when needed, and reuses a local SQLite index. The first release targets Windows and Fedora Linux. Each selection includes at most three capabilities, with fewer or none when appropriate.
+The implementation uses TypeScript, starts when needed, and reuses a local SQLite index. The first release targets Windows and Pop!_OS Linux. Each selection includes at most three capabilities, with fewer or none when appropriate.
 
 ## What Kitroute routes
 

@@ -35,7 +35,7 @@ Use supported agent information as the first source for capability discovery. Us
 
 ## Local execution
 
-Use TypeScript for the shared core and adapter code where the host supports it. Select and pin the execution runtime during implementation on Windows and Fedora Linux.
+Use TypeScript for the shared core and adapter code where the host supports it. Select and pin the execution runtime during implementation on Windows and Pop!_OS Linux.
 
 Use a local core so automatic routing does not require a hosted service. Start Kitroute when needed for each routing request and reuse a saved local index. The initial release does not require a background service. Measure startup and indexing overhead during evaluation.
 

@@ -1,6 +1,6 @@
 # ADR-006: One guided setup with owned configuration
 
-Date: 5 October 2026.
+Date: 5 October 2026. Amended 8 October 2026: Pop!_OS replaces Fedora as the Linux target under D25; the runtime and setup decisions are unchanged.
 
 Status: established policy D20.
 
@@ -31,6 +31,6 @@ Detect native hook trust requirements and present them as setup status. Do not e
 
 Setup needs preview, ownership tracking, and conflict handling. Backups help recover incomplete transactions but are not uninstall ownership records.
 
-P04 tests repeated setup, malformed configuration, partial failure, changed entries, and later user edits. M4 requires Windows and Fedora results.
+P04 tests repeated setup, malformed configuration, partial failure, changed entries, and later user edits. M4 requires Windows and Pop!_OS results.
 
 Implementation: [P04](../phases/18_phase_04_lifecycle_setup.md). Product decision: [D20](../../architecture/06_decision_log.md).

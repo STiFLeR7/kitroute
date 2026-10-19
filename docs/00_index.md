@@ -41,6 +41,8 @@ Kitroute helps coding agents select and use relevant installed skills and tools 
 | [33 Installable preview evidence](implementation/evidence/33_p04_installable_preview.md) | Package and reversible setup results. |
 | [34 Codex Windows live test](implementation/evidence/34_codex_windows_live_testing.md) | Windows command correction and live Codex tests with ChatGPT sign-in. |
 
+Linux testing handoff: [Pop!_OS instructions for Claude Code](../POPOS_TEST_HANDOFF.md). Pop!_OS replaced Fedora on 8 October 2026 (D25). Earlier evidence reports retain their original Fedora references as historical records.
+
 ## Naming convention
 
 Use `NN_descriptive_name.md`, with a two-digit number, an underscore, and lowercase snake_case. Numbers are unique across the entire `docs/` tree and define reading order; they do not restart within subdirectories. Add the next unused number when adding a document, and update this index. Keep existing filenames stable once referenced.
@@ -49,9 +51,9 @@ Subdirectories group related documents: `research/`, `architecture/`, `integrati
 
 ## Document status
 
-The shared local core, host-specific adapters, and optional MCP interface form the architecture baseline. All 14 guided choices are recorded in the decision log. These include TypeScript, execution on demand, SQLite, Windows and Fedora Linux, and a free local core.
+The shared local core, host-specific adapters, and optional MCP interface form the architecture baseline. All 14 guided choices are recorded in the decision log. These include TypeScript, execution on demand, SQLite, Windows and Pop!_OS Linux, and a free local core.
 
-The 14-question round is closed. The implementation checklist tracks the broad work. The phase plans define exact tasks and tests. M1–M5 remain in progress, and M6 remains not started. The milestone register and evidence reports separate passing Windows tests from unrun Fedora tests and release gates.
+The 14-question round is closed. The implementation checklist tracks the broad work. The phase plans define exact tasks and tests. M1–M5 remain in progress, and M6 remains not started. The milestone register and evidence reports separate passing Windows tests from unrun Pop!_OS tests and release gates.
 
 Research was collected on 5 October 2026. It remains a dated source snapshot. Use the decision log and current design documents for the selected direction.
 

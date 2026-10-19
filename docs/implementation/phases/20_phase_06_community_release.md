@@ -12,7 +12,7 @@ Spec: [MVP scope](../../delivery/08_mvp_scope.md), [milestones](../13_milestones
 
 ## Global constraints
 
-Local routing remains free. Windows and Fedora are the tested support targets. Publishing and official submissions require explicit maintainer authorization after the package is reviewable.
+Local routing remains free. Windows and Pop!_OS are the required support targets; support claims need recorded test evidence. Publishing and official submissions require explicit maintainer authorization after the package is reviewable.
 
 ## Review focus
 
@@ -49,7 +49,7 @@ Run this test through npm test so npm_execpath identifies the npm CLI. Parse pac
 
 - [ ] Set package files to compiled src, bin wrapper, adapter distribution metadata, README, and the selected license. Exclude compiled tests and evaluation code.
 - [ ] Run npm ci, npm test, and npm pack --dry-run --json. Inspect the actual allowlist and record its result.
-- [ ] Install the local tarball into a clean temporary prefix on Windows and Fedora. Run doctor, setup preview/apply, an ordinary host request, and uninstall.
+- [ ] Install the local tarball into a clean temporary prefix on Windows and Pop!_OS. Run doctor, setup preview/apply, an ordinary host request, and uninstall.
 - [ ] Commit with build: prepare tested community package.
 
 ## Task P06.T2: Community documentation and release record

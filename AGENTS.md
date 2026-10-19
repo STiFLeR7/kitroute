@@ -2,7 +2,7 @@
 
 Keep project files, test homes, captures, databases, caches, packages, and worktrees inside this repository.
 The Windows workspace is `D:\kitroute`. Do not create Kitroute artifacts on C:.
-On Fedora, use the mounted or transferred repository root as the workspace boundary.
+On Pop!_OS, use the mounted or transferred repository root as the workspace boundary.
 
 Use these ignored directories:
 

@@ -10,6 +10,8 @@ Tech Stack: TypeScript, Node child processes, SQLite, and Node tests.
 
 Spec: [Contracts](../14_module_map_contracts.md), [adapter ADR](../adrs/23_adr_003_host_adapters.md), and [history ADR](../adrs/25_adr_005_history_privacy.md).
 
+Target update, 8 October 2026: Pop!_OS replaces Fedora for the required Linux checks. The execution status below is historical; use the [milestone register](../13_milestones.md) for current status.
+
 ## Execution status
 
 Windows 11 with Node v24.11.0 only. Codex live entry was deferred by the user. Fedora has not been run.
@@ -97,7 +99,7 @@ handleHook chooses the compiled worker path and passes Adapter.validateOutput bo
 
 - [ ] In the worker, normalize input and establish the active root/profile. Call ensureInventory, then currentAvailability before select. Emit nothing on abstention or failure.
 - [ ] Obtain fresh tool metadata only through supported current host interfaces. Test routing without such an interface and keep cached tools unknown.
-- [ ] Prove that compiled hook commands work from paths containing spaces on Windows and Fedora. Do not add network package downloads to the prompt path.
+- [ ] Prove that compiled hook commands work from paths containing spaces on Windows and Pop!_OS. Do not add network package downloads to the prompt path.
 - [ ] Run process tests and live ordinary-request smoke tests. Commit with feat: route host prompts through bounded workers.
 
 ## Task P03.T2: Basic history and retention

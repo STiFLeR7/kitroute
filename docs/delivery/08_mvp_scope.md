@@ -6,7 +6,7 @@ Status: first-release plan aligned with the completed product decisions. This do
 
 Demonstrate automatic, useful selection of installed skills and available MCP tools on Claude Code and Codex, with minimal setup and observable behavior. Exact support levels depend on the adapter spike.
 
-The first release targets Windows and Fedora Linux together. The user's dual-boot setup provides both test environments. Publish exact tested agent versions and Fedora versions. Support for other Linux distributions or macOS requires separate testing.
+The first release targets Windows and Pop!_OS Linux together. Publish exact tested agent versions and Pop!_OS versions. Support for other Linux distributions or macOS requires separate testing.
 
 ## Initial features
 

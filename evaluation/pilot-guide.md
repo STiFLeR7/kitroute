@@ -5,13 +5,13 @@ Thank you for testing Kitroute. Taking part is voluntary. You can stop at any ti
 ## What the pilot is
 
 - 5 developers, over 5 days.
-- At least 2 participants on each target system: Windows 11 and Fedora.
+- At least 2 participants on each target system: Windows 11 and Pop!_OS.
 - Each participant completes at least 3 ordinary development sessions with Kitroute turned on. Work on what you would do anyway. Do not make up tasks for the test.
 
 ## Current limits
 
 - The preview is tested only on Windows 11 with Node 24.11.0.
-- Codex setup is skipped on Windows until it is verified. Windows participants use Claude Code. Fedora participants may use Claude Code or Codex.
+- Codex setup is skipped on Windows until it is verified. Windows participants use Claude Code. Pop!_OS participants may use Claude Code or Codex.
 - The package is private. It is not on any registry.
 
 ## 1. Install from a local tarball

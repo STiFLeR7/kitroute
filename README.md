@@ -7,7 +7,7 @@ Kitroute is a local router for Claude Code and Codex skills. When you send a pro
 This is a development preview.
 
 - Tested only on Windows 11 with Node 24.11.0.
-- Not tested on Fedora.
+- Pop!_OS is the required Linux target and remains untested. See [the testing handoff](POPOS_TEST_HANDOFF.md).
 - Codex CLI 0.157.1 passed a live Windows smoke test with ChatGPT sign-in. See [the test report](docs/implementation/evidence/34_codex_windows_live_testing.md).
 - The package declares Node >=24.21.0 <25. The local test used 24.11.0, so runtime support still needs resolution.
 - The package is marked private. It is not published to any registry.

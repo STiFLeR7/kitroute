@@ -3,7 +3,7 @@
 Fill in one record for each session. Giving feedback is voluntary. Project names and source code are not needed.
 
     {
-      "platform": "fedora",
+      "platform": "popos",
       "host": "codex",
       "workflow": "debugging",
       "helpful": true,
@@ -15,7 +15,7 @@ Fill in one record for each session. Giving feedback is voluntary. Project names
 
 ## Fields
 
-- `platform`: your system. Use `windows` or `fedora`.
+- `platform`: your system. Use `windows` or `popos`.
 - `host`: the tool you used. Use `claude-code` or `codex`.
 - `workflow`: the kind of work. For example `debugging`, `feature`, `refactor`, `testing`, `docs`, or `review`.
 - `helpful`: `true` if Kitroute guidance helped in this session, `false` if not.
